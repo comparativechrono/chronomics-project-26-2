@@ -1,0 +1,84 @@
+name	genus	species	match	note
+Cheetah	Acinonyx	Acinonyx jubatus	species
+Owl monkey	Aotus	Aotus trivirgatus	species
+Mountain beaver	Aplodontia	Aplodontia rufa	species
+Greater short-tailed shrew	Blarina	Blarina brevicauda	species
+Cow	Bos	Bos taurus	species
+Three-toed sloth	Bradypus	Bradypus tridactylus	species
+Northern fur seal	Callorhinus	Callorhinus ursinus	species
+Vesper mouse	Calomys	Calomys callosus	species
+Dog	Canis	Canis lupus familiaris	species
+Roe deer	Capreolus	Capreolus capreolus	species
+Goat	Capri	Capra hircus	species	genus misspelt in msleep
+Guinea pig	Cavis	Cavia porcellus	species	genus misspelt in msleep
+Grivet	Cercopithecus	Chlorocebus aethiops	species
+Chinchilla	Chinchilla	Chinchilla lanigera	species
+Star-nosed mole	Condylura	Condylura cristata	species
+African giant pouched rat	Cricetomys	Cricetomys gambianus	species
+Lesser short-tailed shrew	Cryptotis	Cryptotis parva	species
+Long-nosed armadillo	Dasypus	Dasypus novemcinctus	species
+Tree hyrax	Dendrohyrax	Dendrohyrax validus	species
+North American Opossum	Didelphis	Didelphis virginiana	species
+Asian elephant	Elephas	Elephas maximus	species
+Big brown bat	Eptesicus	Eptesicus fuscus	species
+Horse	Equus	Equus caballus	species
+Donkey	Equus	Equus asinus	species
+European hedgehog	Erinaceus	Erinaceus europaeus	species
+Patas monkey	Erythrocebus	Erythrocebus patas	species
+Western american chipmunk	Eutamias	.	genus	Neotamias, species not given
+Domestic cat	Felis	Felis catus	species
+Galago	Galago	Galago senegalensis	species
+Giraffe	Giraffa	Giraffa camelopardalis	species
+Pilot whale	Globicephalus	.	genus	Globicephala, species not given
+Gray seal	Haliochoerus	Halichoerus grypus	species	genus misspelt in msleep
+Gray hyrax	Heterohyrax	Heterohyrax brucei	species
+Human	Homo	Homo sapiens	species
+Mongoose lemur	Lemur	Eulemur mongoz	species
+African elephant	Loxodonta	Loxodonta africana	species
+Thick-tailed opposum	Lutreolina	Lutreolina crassicaudata	species
+Macaque	Macaca	.	genus	species not given
+Mongolian gerbil	Meriones	Meriones unguiculatus	species
+Golden hamster	Mesocricetus	Mesocricetus auratus	species
+Vole	Microtus	.	genus	species not given
+House mouse	Mus	Mus musculus	species
+Little brown bat	Myotis	Myotis lucifugus	species
+Round-tailed muskrat	Neofiber	Neofiber alleni	species
+Slow loris	Nyctibeus	Nycticebus coucang	species	genus misspelt in msleep
+Degu	Octodon	Octodon degus	species
+Northern grasshopper mouse	Onychomys	Onychomys leucogaster	species
+Rabbit	Oryctolagus	Oryctolagus cuniculus	species
+Sheep	Ovis	Ovis aries	species
+Chimpanzee	Pan	Pan troglodytes	species
+Tiger	Panthera	Panthera tigris	species
+Jaguar	Panthera	Panthera onca	species
+Lion	Panthera	Panthera leo	species
+Baboon	Papio	.	genus	species not given
+Desert hedgehog	Paraechinus	Paraechinus hypomelas	species
+Potto	Perodicticus	Perodicticus potto	species
+Deer mouse	Peromyscus	Peromyscus maniculatus	species
+Phalanger	Phalanger	Trichosurus vulpecula	species	value matches Trichosurus vulpecula ('phalanger') in the Phylogeny of Sleep database
+Caspian seal	Phoca	Pusa caspica	species
+Common porpoise	Phocoena	Phocoena phocoena	species
+Potoroo	Potorous	Potorous tridactylus	species
+Giant armadillo	Priodontes	Priodontes maximus	species
+Rock hyrax	Procavia	Procavia capensis	species
+Laboratory rat	Rattus	Rattus norvegicus	species
+African striped mouse	Rhabdomys	Rhabdomys pumilio	species
+Squirrel monkey	Saimiri	Saimiri sciureus	species
+Eastern american mole	Scalopus	Scalopus aquaticus	species
+Cotton rat	Sigmodon	Sigmodon hispidus	species
+Mole rat	Spalax	Nannospalax leucodon	species	value matches Spalax leucodon in the Phylogeny of Sleep database
+Arctic ground squirrel	Spermophilus	Urocitellus parryii	species
+Thirteen-lined ground squirrel	Spermophilus	Ictidomys tridecemlineatus	species
+Golden-mantled ground squirrel	Spermophilus	Callospermophilus lateralis	species
+Musk shrew	Suncus	Suncus murinus	species
+Pig	Sus	Sus scrofa	species
+Short-nosed echidna	Tachyglossus	Tachyglossus aculeatus	species
+Eastern american chipmunk	Tamias	Tamias striatus	species
+Brazilian tapir	Tapirus	Tapirus terrestris	species
+Tenrec	Tenrec	Tenrec ecaudatus	species
+Tree shrew	Tupaia	Tupaia glis	species
+Bottle-nosed dolphin	Tursiops	Tursiops truncatus	species
+Genet	Genetta	.	genus	species not given
+Arctic fox	Vulpes	Vulpes lagopus	species
+Red fox	Vulpes	Vulpes vulpes	species
