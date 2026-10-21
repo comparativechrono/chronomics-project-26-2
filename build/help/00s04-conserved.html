@@ -1,0 +1,162 @@
+<!-- id: h-s04 | title: Stage 4 · Conserved or not? | group: The project | stage: 4 | tab: yes | tabtitle: Stage 4 – Conserved or not? | summary: Align all eleven files; one R function for any position; the seven amino acids in up to 453 mammals from two sources; the species that differ; how conserved each position is compared with the rest of its protein | keys: stage 4 conservation conserved kalign loop basename function call_site rbind for loop if next paste0 file.exists table merge ifelse species_residues profile sapply plot type h percentile rank grm1 s458 threonine sik3 n783 serine porcupine coendou tenrec platypus toga fault frame -->
+<h1>Stage 4 · Conserved or not?</h1>
+<div class="stage-meta"><span class="when">Weeks 4–5</span><span>about 6 hours</span><span class="stage-progress"></span></div>
+<p class="lede">The first real test of the project. Do for all seven mutations, in both sources, what you did for P384 – and find out whether the papers were right to call the seven amino acids conserved.</p>
+<div class="skills"><b>You will learn</b><ul>
+<li>to turn a series of steps into a function of your own, and run it in a loop</li>
+<li>to join tables (<code>merge</code>) and to compare two independent sources</li>
+<li>to measure how conserved a position is compared with the rest of its protein</li>
+<li>to look for faults in data before you believe them</li>
+</ul></div>
+
+<h2>1. Align everything</h2>
+<p>A <code>for</code> loop aligns all eleven files. <code>basename $f _mammals.fasta</code> removes the folders and the end of the file name, so that <code>BHLHE41_ncbi_mammals.fasta</code> becomes <code>BHLHE41_ncbi</code>:</p>
+<pre class="code" data-run="term"><code>cd ~/project
+for f in /data/examples/fnss/orthologs/*.fasta
+do
+  name=$(basename $f _mammals.fasta)
+  kalign -i $f -o alignments/$name.afa
+  echo "aligned $name"
+done
+ls alignments</code></pre>
+<p>The long proteins – GRM1 and SIK3, over a thousand amino acids, in up to 402 species – take longest; the whole loop takes a few minutes.</p>
+<div class="callout check"><div class="co-t">Check</div><p>Eleven <code>.afa</code> files in <code>alignments</code>: <code>ADRB1_ncbi.afa</code> … <code>SIK3_toga.afa</code>.</p></div>
+
+<h2>2. One function for any position</h2>
+<p>Open the notebook of this stage:</p>
+<div class="tryrow"><button class="do" type="button" data-stage-nb="r|stage04-conserved|Stage 4 – Conserved or not?">Open my stage 4 notebook</button></div>
+<p>A notebook starts empty: what you made in stage 3's notebook is not here. Run the <code>read_fasta</code> function again first (copy it from stage 3, or use the button). Then make a second function out of the steps of stage 3: give it an alignment file and a human position, and it returns a data frame with each species' amino acid in that column and the window identity around it. <code>max</code> and <code>min</code> keep the window inside the protein:</p>
+<pre class="code" data-run="r"><code>read_fasta &lt;- function(path) {
+  x &lt;- readLines(path)
+  h &lt;- grep("^&gt;", x)
+  ids &lt;- sub("^&gt;(\\S+).*", "\\1", x[h])
+  ends &lt;- c(h[-1] - 1, length(x))
+  seqs &lt;- mapply(function(a, b) paste(x[(a + 1):b], collapse = ""), h, ends)
+  setNames(toupper(seqs), ids)
+}
+# the amino acid of every species in the column of human position pos, with the window identity
+call_site &lt;- function(file, pos, ref = "Homo_sapiens") {
+  aln &lt;- read_fasta(file)
+  m &lt;- do.call(rbind, strsplit(aln, ""))
+  human_cols &lt;- which(m[ref, ] != "-")
+  col &lt;- human_cols[pos]
+  window &lt;- human_cols[max(1, pos - 10):min(length(human_cols), pos + 10)]
+  human_window &lt;- m[ref, window]
+  win_id &lt;- apply(m[, window], 1, function(row) mean(row == human_window))
+  data.frame(species = rownames(m), residue = m[, col], window_identity = round(win_id, 2),
+             ok = win_id &gt;= 0.5 &amp; m[, col] != "-", row.names = NULL)
+}
+# try it: the same answer as in stage 3
+table(call_site("~/project/alignments/BHLHE41_ncbi.afa", 384)$residue)</code></pre>
+<p>Now run it for every mutation and both sources. Read the table of mutations, keep the seven short-sleep ones, and loop over them. <code>paste0</code> glues text together into the file name; <code>if (!file.exists(file)) next</code> skips a file that does not exist (there is no TOGA file for GRM1b); <code>rbind</code> adds each new table under the ones before:</p>
+<pre class="code" data-run="r"><code>variants &lt;- read.delim("/data/examples/fnss/variants.tsv")
+variants &lt;- variants[variants$kind == "familial natural short sleep", ]
+all_calls &lt;- NULL
+for (i in 1:nrow(variants)) {
+  for (source in c("ncbi", "toga")) {
+    file &lt;- paste0("~/project/alignments/", variants$gene[i], "_", source, ".afa")
+    if (!file.exists(file)) next
+    calls &lt;- call_site(file, variants$position[i])
+    calls$variant &lt;- variants$variant[i]
+    calls$source &lt;- source
+    all_calls &lt;- rbind(all_calls, calls)
+  }
+}
+nrow(all_calls)
+table(all_calls$variant, all_calls$source)
+table(all_calls$variant, all_calls$ok)
+write.table(all_calls, "~/project/results/site_calls.tsv", sep = "\t", quote = FALSE, row.names = FALSE)</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p><b>3,825</b> rows: one per species, mutation and source. Fourteen fail the check (<code>ok</code> is FALSE): one for Y362 and 13 for NPSR1 Y206, all in TOGA's files.</p></div>
+<p>Look at the nine before you set them aside:</p>
+<pre class="code" data-run="r"><code>all_calls[!all_calls$ok, c("variant", "source", "species", "residue", "window_identity")]</code></pre>
+<p>Their window identity is 0.24 or less: the species has a gap there, or another part of its protein has been lined up against the human stretch. Some of these proteins are incomplete – TOGA could predict only part of the gene in a poorly assembled genome. Others are fine, and the aligner has simply put them in the wrong place here: aligners make mistakes too, especially with partial sequences (you will meet one of these, the North American porcupine, in stage 5). That is what the check is for.</p>
+
+<h2>3. The answer</h2>
+<p>Count the amino acids in each column, for the rows that pass the check – one row for each mutation and source, one column for each amino acid:</p>
+<pre class="code" data-run="r"><code>ok &lt;- all_calls[all_calls$ok, ]
+table(paste(ok$variant, ok$source), ok$residue)</code></pre>
+<p>Then list the species whose amino acid is not the human one. <code>setNames</code> makes a vector of the human amino acids named by mutation, so that <code>human_res[ok$variant]</code> looks up the right one for each row:</p>
+<pre class="code" data-run="r"><code>human_res &lt;- setNames(variants$human_residue, variants$variant)
+ok$human_residue &lt;- human_res[ok$variant]
+differ &lt;- ok[ok$residue != ok$human_residue, ]
+table(differ$variant)
+differ[!(differ$variant %in% c("GRM1_S458A", "SIK3_N783Y")), c("variant", "source", "species", "residue")]</code></pre>
+<p><code>%in%</code> asks whether each value is among a set; <code>!</code> means "not".</p>
+<div class="callout check"><div class="co-t">Check</div><p>Five of the seven positions are nearly the same in every mammal. <b>P384</b> is P in every species of both sources; <b>R889</b> (GRM1b, NCBI only) is R in all 203. <b>Y362</b> is Y everywhere except one rodent, the gundi <i>Ctenodactylus gundi</i> (C). <b>A187</b> is A except three tenrecs (S) and the platypus (G). <b>Y206</b> is Y except two porcupines: the crested porcupine <i>Hystrix cristata</i> (C) – and the Brazilian porcupine <i>Coendou prehensilis</i>, with <b>H</b>. The other two are not conserved at all: at GRM1 <b>S458</b>, 145 of NCBI's 256 species and 235 of TOGA's 394 have T; at SIK3 <b>N783</b>, 81 of 266 and 84 of 402 have S or T.</p></div>
+<div class="callout think"><div class="co-t">Think</div><p>H is the amino acid of the short sleepers' NPSR1 mutation, Y206H. A wild porcupine with the human short-sleep mutation? Or a mistake in its genome? Note that it is in TOGA's file only. Write it in your logbook: you will come back to this porcupine in stage 10.</p></div>
+
+<h2>4. Do the two sources agree?</h2>
+<p>For the species in both sources, do NCBI and TOGA give the same amino acid? <code>merge</code> joins two tables by the columns they share – here the mutation and the species:</p>
+<pre class="code" data-run="r"><code>ncbi_calls &lt;- ok[ok$source == "ncbi", c("variant", "species", "residue")]
+toga_calls &lt;- ok[ok$source == "toga", c("variant", "species", "residue")]
+both &lt;- merge(ncbi_calls, toga_calls, by = c("variant", "species"), suffixes = c("_ncbi", "_toga"))
+nrow(both)
+table(both$residue_ncbi == both$residue_toga)</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>944 pairs, and the two sources agree in <b>every one</b>. Two methods built from partly different genomes and different ways of finding genes give the same answer: you can trust it.</p></div>
+<p>So combine them into one table of species: every species in either source, with its amino acid (TOGA's where there is one, otherwise NCBI's – they never disagree). <code>all = TRUE</code> keeps the species found in only one of them; <code>ifelse</code> chooses, row by row:</p>
+<pre class="code" data-run="r"><code>combined &lt;- merge(ncbi_calls, toga_calls, by = c("variant", "species"), all = TRUE, suffixes = c("_ncbi", "_toga"))
+combined$residue &lt;- ifelse(is.na(combined$residue_toga), combined$residue_ncbi, combined$residue_toga)
+combined$source &lt;- ifelse(is.na(combined$residue_ncbi), "toga", ifelse(is.na(combined$residue_toga), "ncbi", "both"))
+table(combined$variant, combined$residue)
+write.table(combined[, c("variant", "species", "residue", "source")], "~/project/results/species_residues.tsv",
+            sep = "\t", quote = FALSE, row.names = FALSE)</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>The answer for the mammals, species by species: P384 – P in all <b>405</b>; Y362 – Y 403, C 1; A187 – A 449, S 3, G 1; Y206 – Y 450, H 1, C 1; S458 – <b>S 194, T 276</b>; R889 – R 203; N783 – <b>N 362, S 108, T 10</b>. <code>results/species_residues.tsv</code> is the table the next stages use.</p></div>
+<div class="task"><div class="task-t">Your turn</div>
+<p>Which mammals have T at GRM1 458, and which have S? Look at the first species of each: <code>head(combined$species[combined$variant == "GRM1_S458A" &amp; combined$residue == "T"], 20)</code>, and the same for S. Do you see a pattern? Do the same for SIK3 783: which species have S?</p>
+<details class="hint answer"><summary>Show the answer</summary>
+<p>T: cats, dogs, bears, seals, cattle, deer, whales, horses, bats, shrews – the carnivores, hoofed mammals and bats, one large branch of the mammal tree (Laurasiatheria). S: mice, rats, monkeys, apes – and marsupials. For SIK3 the S species are scattered over the tree: all the whales and dolphins, the cats and their relatives (hyenas, mongooses, civets, the fossa), fruit bats and a few other bats, elephants, tenrecs, anteaters, the aye-aye, a tree shrew, a few rodents, the platypus and the echidna, and many marsupials; the lemurs have T. Two very different patterns – stage 5 maps them on the tree.</p></details></div>
+
+<h2>5. How conserved, compared with what?</h2>
+<p>"Conserved" means more than "the same in many species": it means more alike than the rest of the protein. Measure every position of a protein the same way – the share of species that have the human amino acid – and see where the mutation's position falls. <code>sapply</code> applies a function to each value of a vector (here, each column that holds a human amino acid) and collects the answers:</p>
+<pre class="code" data-run="r"><code>profile &lt;- function(file, ref = "Homo_sapiens") {
+  aln &lt;- read_fasta(file)
+  m &lt;- do.call(rbind, strsplit(aln, ""))
+  human_cols &lt;- which(m[ref, ] != "-")
+  same &lt;- sapply(human_cols, function(k) mean(m[, k] == m[ref, k]))
+  data.frame(position = seq_along(human_cols), human_residue = m[ref, human_cols], same = same, row.names = NULL)
+}
+p &lt;- profile("~/project/alignments/GRM1_ncbi.afa")
+p[458, ]
+median(p$same)
+mean(p$same &lt; p$same[458])
+plot(p$position, 1 - p$same, type = "h", col = "grey50", xlab = "Position in human GRM1 (mGluR1a)",
+     ylab = "Share of species with another amino acid", main = "GRM1 in 256 mammals")
+points(458, 1 - p$same[458], col = "red", pch = 19)</code></pre>
+<p><code>mean(p$same &lt; p$same[458])</code> is the share of positions that are <i>less</i> conserved than S458. The plot shows the other side of the coin: for each position, the share of species whose amino acid differs from the human one, as a vertical line (<code>type = "h"</code>) – conserved positions are low, variable ones stand out as spikes.</p>
+<div class="callout check"><div class="co-t">Check</div><p>Half of GRM1's positions have the human amino acid in at least 97% of species. S458 has it in only <b>43%</b>: just <b>3.3%</b> of GRM1's positions are less conserved. Far from conserved, S458 is among the most variable positions of the protein. Most of the positions more variable still are at the very start of the protein or in mGluR1a's long tail inside the cell (after position 880), where the species' proteins differ in length; only a few are, like S458, in the large part outside the cell that binds glutamate.</p></div>
+<p>The same for all seven:</p>
+<pre class="code" data-run="r"><code>for (i in 1:nrow(variants)) {
+  p &lt;- profile(paste0("~/project/alignments/", variants$gene[i], "_ncbi.afa"))
+  pos &lt;- variants$position[i]
+  cat(variants$variant[i], ": share", round(p$same[pos], 3), "; positions less conserved:",
+      round(100 * mean(p$same &lt; p$same[pos]), 1), "%\n")
+}</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>P384 and Y362: share 1, more conserved than 78% of DEC2's positions; A187: 0.989 (68%); Y206: 1 (98% – one of the most conserved positions of NPSR1); S458: 0.434 (<b>3.3%</b>); R889: 1 (48% – most of mGluR1b is the same in every species); N783: 0.695 (<b>5.8%</b>).</p></div>
+<div class="task"><div class="task-t">Your turn: a fault in the data</div>
+<p>Draw the profile of DEC2 from TOGA's alignment (<code>BHLHE41_toga.afa</code>) and compare it with NCBI's. What happens after position 431? Print <code>round(p$same[425:445], 2)</code>, and look at that stretch in the alignment (<code>open alignments/BHLHE41_toga.afa</code> in the terminal). What has gone wrong – and does it matter for P384?</p>
+<details class="hint answer"><summary>Show the answer</summary>
+<p>From position 432 to the end the share collapses to almost 0 in TOGA's alignment but not in NCBI's. TOGA's human reference for this gene goes out of reading frame at codon 432, and so every species' predicted protein is read in the wrong frame from there on: the last 50 amino acids are nonsense (<a href="#h-data">The project data</a> warns about it). P384 and Y362 are before the fault and are not affected – and NCBI's file, made a different way, shows the real C-terminus. One source alone could have misled you.</p></details></div>
+
+<div class="callout log"><div class="co-t">For your logbook</div>
+<ul>
+<li>The table of the seven positions in mammals: species, the amino acids, the exceptions.</li>
+<li>For each paper's claim of conservation (stage 1): supported, partly supported or not supported – and why.</li>
+<li>The Brazilian porcupine.</li>
+<li>Why you checked the window identity, compared two sources and drew profiles – three checks, three kinds of error they catch.</li>
+</ul></div>
+
+<h2>Going further</h2>
+<ul>
+<li><b>Beyond mammals.</b> The papers claimed conservation "in vertebrates" or "among mammals and birds". UniProt's <i>Similar proteins</i> section, or a BLAST search in the Databases tab with the human stretch around a mutation, finds the same proteins in birds, frogs and fish. Is A187 of ADRB1 the same in a fish? S458 of GRM1 in a frog?</li>
+<li><b>Which family?</b> 45 of the 108 species with S at SIK3 783 are whales and dolphins – every one in the data. Does that make S look more common than it would if each family counted once? How would you correct for it?</li>
+</ul>
+<ul class="checklist">
+<li data-check="s4-align">I aligned all eleven files in a loop.</li>
+<li data-check="s4-function">I wrote the function <code>call_site</code> and ran it for all seven mutations and both sources.</li>
+<li data-check="s4-answer">I counted the amino acids at each position and listed the species that differ.</li>
+<li data-check="s4-sources">I compared NCBI and TOGA, and saved <code>results/species_residues.tsv</code>.</li>
+<li data-check="s4-profile">I measured how conserved each position is compared with the rest of its protein.</li>
+<li data-check="s4-fault">I found the fault in TOGA's DEC2, and why it does not affect P384.</li>
+<li data-check="s4-log">I wrote this stage up, with a verdict on each paper's claim.</li>
+</ul>
+<div class="stage-nav"><button type="button" data-goto="h-s03"><small>Back</small>← Stage 3 · Line them up</button><button class="next" type="button" data-goto="h-s05"><small>Next</small>Stage 5 · Where the changes happened →</button></div>

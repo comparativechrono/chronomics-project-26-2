@@ -1,0 +1,56 @@
+<!-- id: h-glossary | title: Glossary | group: The project | stage: 0 | summary: The words of the project, from allele to window identity | keys: glossary words terms definitions amino acid residue isoform ortholog alignment gap conserved purifying selection fasta tsv refseq mane toga assembly read strand reverse complement codon heterozygous allele frequency carrier exome beta confidence interval p value t-test tree newick ancestral state lambda brownian motion phylogenetic regression alphafold plddt alphamissense gpcr kinase orexin eeg -->
+<h1>Glossary</h1>
+<p class="lede">The words of the project, in alphabetical order. The search box at the top of this pane finds them too.</p>
+<dl class="glossary">
+<dt>Accession</dt><dd>The identifier of a record in a database: <code>NP_110389.1</code> (a RefSeq protein; <code>.1</code> is its version), <code>Q9C0J9</code> (a UniProt entry), <code>SRR10331604</code> (a sequencing run).</dd>
+<dt>Afrotheria, Xenarthra, Euarchontoglires, Laurasiatheria</dt><dd>The four great groups of placental mammals. Afrotheria: elephants, hyraxes, tenrecs, aardvark, manatees. Xenarthra: armadillos, sloths, anteaters. Euarchontoglires: primates, tree shrews, rodents, rabbits. Laurasiatheria: shrews and hedgehogs, bats, carnivores, pangolins, horses and rhinos, and the even-toed hoofed mammals with the whales.</dd>
+<dt>Alignment</dt><dd>Sequences written one above another, with gaps (<code>-</code>) added so that the letters in a column come from the same place in the ancestral sequence. <b>Pairwise</b>: two sequences; <b>multiple</b>: many.</dd>
+<dt>Allele</dt><dd>One version of a stretch of DNA, or of a codon: TAC and CAC are two alleles of NPSR1 codon 206 in the porcupine.</dd>
+<dt>Allele frequency</dt><dd>The fraction of chromosomes in a group that carry an allele: 197 of 1,612,434 is 0.000122.</dd>
+<dt>AlphaFold, pLDDT</dt><dd>A program that predicts the 3D structure of a protein from its sequence. Its confidence in each amino acid, the pLDDT, goes from 0 to 100: above 90 the backbone is usually right; below 50 the region is probably <b>disordered</b> – floppy, without one shape.</dd>
+<dt>AlphaMissense</dt><dd>A program that predicts how damaging each possible amino-acid change in a human protein is, from 0 to 1, from evolution and structure. Not a measurement.</dd>
+<dt>Amino acid, residue</dt><dd>The building blocks of proteins, 20 kinds, written with one letter: P proline, R arginine, Y tyrosine, H histidine, A alanine, V valine, S serine, T threonine, W tryptophan, N asparagine… In a protein each one is called a residue, and is known by its letter and number: P384.</dd>
+<dt>Ancestral state</dt><dd>The amino acid (or any trait) of an ancestor at a node of the tree, inferred from its descendants. A model gives each possible state a probability.</dd>
+<dt>Assembly (of a genome)</dt><dd>A genome sequence pieced together from many reads. TOGA's names for them are short codes: <code>HLcoePre1</code> is the first assembly of <i>Coendou prehensilis</i> made by the Hiller lab's pipeline.</dd>
+<dt>BETA</dt><dd>In an association study, the difference in a trait between carriers of a variant and other people: in hours for sleep duration.</dd>
+<dt>Binomial test</dt><dd>A test of whether a count of successes – reads with one allele out of all reads – fits a given probability, such as 0.5 for a heterozygote.</dd>
+<dt>Brownian motion (BM)</dt><dd>A model of how a trait such as sleep time drifts along the branches of a tree: randomly, by an amount that grows with time. Under it, close relatives are expected to be alike.</dd>
+<dt>Carrier</dt><dd>A person with one (heterozygous) or two (homozygous) copies of a variant. For a rare variant, the carrier frequency is about twice the allele frequency.</dd>
+<dt>Codon</dt><dd>Three letters of coding DNA that stand for one amino acid (or a stop): TAC and TAT are tyrosine, CAC and CAT histidine.</dd>
+<dt>Confidence interval (95%)</dt><dd>A range of values compatible with the data: computed this way, it contains the true value 95% of the time. Estimate ± 1.96 × standard error, for large samples.</dd>
+<dt>Conserved</dt><dd>The same in many species. A conserved amino acid is usually one that natural selection has kept because changing it harms the protein.</dd>
+<dt>Coverage (of reads)</dt><dd>How many reads cover a position. With 30 reads, both alleles of a heterozygote are expected about 15 times each.</dd>
+<dt>Data frame</dt><dd>R's table: named columns, one row per thing.</dd>
+<dt>EEG</dt><dd>Electroencephalogram: the electrical activity of the brain, recorded with electrodes. It tells wake, non-REM sleep (slow waves) and REM sleep apart.</dd>
+<dt>Exome</dt><dd>The protein-coding parts of a genome, about 1–2% of it. Exome sequencing reads just those.</dd>
+<dt>FASTA</dt><dd>A text format for sequences: a line starting with <code>&gt;</code> and a name, then the sequence.</dd>
+<dt>FNSS</dt><dd>Familial natural short sleep: a lifelong habit of sleeping 4–6.5 hours a night without feeling sleepy, which runs in families.</dd>
+<dt>gnomAD</dt><dd>The Genome Aggregation Database: the variants of about 807,000 people's exomes and genomes, with how often each is seen.</dd>
+<dt>GPCR</dt><dd>G protein-coupled receptor: a receptor with seven helices that cross the cell membrane, which passes a signal from outside the cell (a hormone, a neurotransmitter) to G proteins inside. ADRB1, NPSR1 and mGluR1 are GPCRs.</dd>
+<dt>Heterozygous, homozygous</dt><dd>With two different alleles (TAC on one chromosome, CAC on the other) or two copies of the same one.</dd>
+<dt>Isoform</dt><dd>One of several proteins made from the same gene, usually by splicing its exons in different ways: mGluR1a and mGluR1b are isoforms of GRM1.</dd>
+<dt>Kinase</dt><dd>An enzyme that adds phosphate groups to other proteins, switching them on or off. SIK3 is one.</dd>
+<dt>Lambda (λ)</dt><dd>Pagel's λ: how much the tree explains the similarity of species in a trait, from 0 (not at all: species are independent) to 1 (as much as Brownian motion would).</dd>
+<dt>MANE Select</dt><dd>The one transcript and protein of each human gene that NCBI and Ensembl agree to use as the reference.</dd>
+<dt>Mutation, variant</dt><dd>A difference in DNA from the reference. Written for a protein as <code>P384R</code> or <code>p.Pro384Arg</code>: proline at position 384 changed to arginine. A <b>missense</b> variant changes one amino acid.</dd>
+<dt>Newick</dt><dd>A text format for trees: <code>((A:1,B:1):2,C:3);</code> – brackets for groups, numbers after colons for branch lengths.</dd>
+<dt>Node</dt><dd>A point in a tree where a branch splits: a common ancestor. The <b>tips</b> are the species of today; the <b>root</b> is the oldest node.</dd>
+<dt>Noradrenaline, orexin, neuropeptide S, glutamate</dt><dd>Messengers of the nervous system. Noradrenaline (norepinephrine) and orexin (hypocretin) keep us awake; neuropeptide S increases arousal; glutamate is the brain's main excitatory transmitter.</dd>
+<dt>Order</dt><dd>A rank of classification above family and genus: Primates, Rodentia, Carnivora, Chiroptera (bats).</dd>
+<dt>Ortholog</dt><dd>The same gene in different species, descended from one gene of their common ancestor. (A <b>paralog</b> is a copy made by duplication within a genome.)</dd>
+<dt>P-value</dt><dd>How often a difference at least as large as the one seen would arise by chance if there were no real difference. Small values are evidence against "no difference" – not a measure of how big or important the difference is.</dd>
+<dt>Phylogenetic regression</dt><dd>A regression (here <code>phylolm</code>) that allows for species being related: it expects close relatives to be alike, and so does not count each of them as fully independent evidence.</dd>
+<dt>Placental, marsupial, monotreme</dt><dd>The three groups of living mammals: placentals (most mammals, us included), marsupials (opossums, kangaroos, koala) and monotremes, which lay eggs (platypus, echidnas).</dd>
+<dt>Purifying selection</dt><dd>Natural selection against harmful changes, which keeps important sequences the same.</dd>
+<dt>Read, read pair</dt><dd>A piece of DNA sequence produced by a sequencing machine: here 151 letters. Illumina machines read both ends of each DNA fragment, in opposite directions: a read pair.</dd>
+<dt>RefSeq</dt><dd>NCBI's curated sequences of genes, transcripts and proteins: <code>NM_</code> and <code>NP_</code> are checked by people, <code>XM_</code> and <code>XP_</code> are predicted by computer.</dd>
+<dt>Reverse complement</dt><dd>The sequence of the other strand of DNA, read in its own direction: reverse the letters and swap A↔T and C↔G. <code>TAC</code> becomes <code>GTA</code>.</dd>
+<dt>Strand</dt><dd>One of the two chains of the DNA double helix. A gene is read from one of them; a read can come from either.</dd>
+<dt>t-test</dt><dd>A test of whether the means of two groups differ.</dd>
+<dt>TOGA</dt><dd>Tool to infer Orthologs from Genome Alignments: predicts the genes of a genome by carrying the human (or mouse) genes across a whole-genome alignment.</dd>
+<dt>Transmembrane helix</dt><dd>A stretch of about 20 mostly water-avoiding amino acids that crosses the cell membrane as a helix.</dd>
+<dt>TSV</dt><dd>Tab-separated values: a table in a text file, with a tab between columns.</dd>
+<dt>UK Biobank</dt><dd>A study of 500,000 people in the UK, aged 40–69 when they joined, with questionnaires (including sleep), measurements, health records and exome and genome sequences.</dd>
+<dt>Window identity</dt><dd>In this project, the fraction of the 21 positions around a mutation (10 on each side) where a species' protein has the same amino acid as the human one: a check that the alignment is right there.</dd>
+</dl>
+<div class="stage-nav"><button type="button" data-goto="h-home"><small>Back</small>← Start here</button></div>

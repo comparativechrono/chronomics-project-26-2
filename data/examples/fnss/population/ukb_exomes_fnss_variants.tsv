@@ -1,0 +1,49 @@
+variant_id	genebass_variant	phenotype	unit	ac	af	beta	se_approx	ci95_low	ci95_high	p	note
+BHLHE41_P384R	12-26122364-G-C	sleep duration	hours	29	3.78e-05	0.2677	0.1808	-0.087	0.622	0.139	
+BHLHE41_P384R	12-26122364-G-C	chronotype	scale 0-3, higher = later	28	4.06e-05	0.3124	0.1826	-0.046	0.67	0.0871	
+BHLHE41_P384R	12-26122364-G-C	ease of waking	scale 0-3	29	3.76e-05	-0.2048	0.1797	-0.557	0.147	0.255	
+BHLHE41_P384R	12-26122364-G-C	insomnia	scale 0-2	29	3.76e-05	0.1444	0.1801	-0.208	0.497	0.422	
+BHLHE41_P384R	12-26122364-G-C	daytime napping	log odds	29	3.73e-05	-1.0889	0.8165	-2.689	0.511	0.182	
+BHLHE41_P384R	12-26122364-G-C	daytime dozing	log odds	28	3.61e-05	-1.0391	1.16	-3.313	1.234	0.37	
+BHLHE41_Y362H	12-26122431-A-G	sleep duration	hours	0							not tested in Genebass
+BHLHE41_Y362H	12-26122431-A-G	chronotype	scale 0-3, higher = later	0							not tested in Genebass
+BHLHE41_Y362H	12-26122431-A-G	ease of waking	scale 0-3	0							not tested in Genebass
+BHLHE41_Y362H	12-26122431-A-G	insomnia	scale 0-2	0							not tested in Genebass
+BHLHE41_Y362H	12-26122431-A-G	daytime napping	log odds	0							not tested in Genebass
+BHLHE41_Y362H	12-26122431-A-G	daytime dozing	log odds	0							not tested in Genebass
+ADRB1_A187V	10-114044692-C-T	sleep duration	hours	166	0.000213	-0.1062	0.0756	-0.254	0.042	0.16	
+ADRB1_A187V	10-114044692-C-T	chronotype	scale 0-3, higher = later	157	0.000224	0.0835	0.0771	-0.068	0.235	0.279	
+ADRB1_A187V	10-114044692-C-T	ease of waking	scale 0-3	168	0.000215	0.0794	0.0747	-0.067	0.226	0.288	
+ADRB1_A187V	10-114044692-C-T	insomnia	scale 0-2	168	0.000215	0.093	0.0748	-0.054	0.24	0.214	
+ADRB1_A187V	10-114044692-C-T	daytime napping	log odds	168	0.000213	-0.4621	0.3526	-1.153	0.229	0.19	
+ADRB1_A187V	10-114044692-C-T	daytime dozing	log odds	167	0.000212	-0.314	0.4986	-1.291	0.663	0.529	
+NPSR1_Y206H	7-34827538-T-C	sleep duration	hours	3	3.85e-06	0.0687	0.5622	-1.033	1.171	0.903	
+NPSR1_Y206H	7-34827538-T-C	chronotype	scale 0-3, higher = later	3	4.28e-06	-0.4778	0.5579	-1.571	0.616	0.392	
+NPSR1_Y206H	7-34827538-T-C	ease of waking	scale 0-3	3	3.83e-06	-0.5313	0.5587	-1.626	0.564	0.342	
+NPSR1_Y206H	7-34827538-T-C	insomnia	scale 0-2	3	3.83e-06	0.2775	0.5598	-0.82	1.375	0.62	
+NPSR1_Y206H	7-34827538-T-C	daytime napping	log odds	3	3.8e-06	-1.0563	2.4152	-5.79	3.677	0.662	
+NPSR1_Y206H	7-34827538-T-C	daytime dozing	log odds	3	3.81e-06	-1.0285	3.5896	-8.064	6.007	0.774	
+GRM1_S458A	6-146352435-T-G	sleep duration	hours	173	0.000222	0.1186	0.074	-0.027	0.264	0.109	
+GRM1_S458A	6-146352435-T-G	chronotype	scale 0-3, higher = later	158	0.000226	0.0646	0.0769	-0.086	0.215	0.401	
+GRM1_S458A	6-146352435-T-G	ease of waking	scale 0-3	174	0.000223	-0.0054	0.0734	-0.149	0.138	0.941	
+GRM1_S458A	6-146352435-T-G	insomnia	scale 0-2	174	0.000222	0.0205	0.0735	-0.124	0.165	0.78	
+GRM1_S458A	6-146352435-T-G	daytime napping	log odds	176	0.000223	0.2166	0.3436	-0.457	0.89	0.528	
+GRM1_S458A	6-146352435-T-G	daytime dozing	log odds	176	0.000224	-0.1417	0.4792	-1.081	0.798	0.767	
+GRM1_R889W	6-146426563-A-T	sleep duration	hours	0							not tested in Genebass
+GRM1_R889W	6-146426563-A-T	chronotype	scale 0-3, higher = later	0							not tested in Genebass
+GRM1_R889W	6-146426563-A-T	ease of waking	scale 0-3	0							not tested in Genebass
+GRM1_R889W	6-146426563-A-T	insomnia	scale 0-2	0							not tested in Genebass
+GRM1_R889W	6-146426563-A-T	daytime napping	log odds	0							not tested in Genebass
+GRM1_R889W	6-146426563-A-T	daytime dozing	log odds	0							not tested in Genebass
+SIK3_N783Y	11-116861352-T-A	sleep duration	hours	101	0.00013	-0.0091	0.0969	-0.199	0.181	0.925	
+SIK3_N783Y	11-116861352-T-A	chronotype	scale 0-3, higher = later	86	0.000123	0.0117	0.1042	-0.193	0.216	0.91	
+SIK3_N783Y	11-116861352-T-A	ease of waking	scale 0-3	101	0.000129	-0.011	0.0963	-0.2	0.178	0.909	
+SIK3_N783Y	11-116861352-T-A	insomnia	scale 0-2	101	0.000129	-0.198	0.0965	-0.387	-0.009	0.0402	
+SIK3_N783Y	11-116861352-T-A	daytime napping	log odds	101	0.000128	-0.3078	0.4396	-1.169	0.554	0.484	
+SIK3_N783Y	11-116861352-T-A	daytime dozing	log odds	102	0.00013	-0.6443	0.6277	-1.875	0.586	0.305	
+NPSR1_N107I	7-34778501-A-T	sleep duration	hours	352853	0.453	0.003	0.0022	-0.001	0.007	0.176	
+NPSR1_N107I	7-34778501-A-T	chronotype	scale 0-3, higher = later	316994	0.453	-0.0014	0.0023	-0.006	0.003	0.547	
+NPSR1_N107I	7-34778501-A-T	ease of waking	scale 0-3	354231	0.453	0.0013	0.0022	-0.003	0.006	0.548	
+NPSR1_N107I	7-34778501-A-T	insomnia	scale 0-2	354442	0.453	-0.0012	0.0022	-0.006	0.003	0.572	
+NPSR1_N107I	7-34778501-A-T	daytime napping	log odds	357220	0.453	-0.016	0.01	-0.036	0.004	0.11	
+NPSR1_N107I	7-34778501-A-T	daytime dozing	log odds	356113	0.453	0.0075	0.014	-0.02	0.035	0.593	

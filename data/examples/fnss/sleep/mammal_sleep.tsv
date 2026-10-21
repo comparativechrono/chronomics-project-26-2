@@ -1,0 +1,102 @@
+species	common_name	order	environment	sleep_pos_h	pos_records	sleep_msleep_h	body_mass_kg	genome_species	match
+Acinonyx jubatus	Cheetah	Carnivora	land		0	12.1	50	Acinonyx_jubatus	species
+Aotus trivirgatus	Owl monkey	Primates	land	16.97	1	17.0	0.48	Aotus_nancymaae	genus
+Aplodontia rufa	Mountain beaver	Rodentia	land	14.4	1	14.4	1.35	Aplodontia_rufa	species
+Blarina brevicauda	Greater short-tailed shrew	Eulipotyphla	land		0	14.9	0.019		none
+Bos taurus	Cow	Artiodactyla	land	3.19	2	4.0	600	Bos_taurus	species
+Bradypus tridactylus	Three-toed sloth	Pilosa	land	8.35	1	14.4	3.85		none
+Callithrix jacchus	White-tufted-ear marmoset	Primates	land	9.5	3			Callithrix_jacchus	species
+Callorhinus ursinus	Northern fur seal	Carnivora	marine		0	8.7	20.49	Callorhinus_ursinus	species
+Callospermophilus lateralis	Golden-mantled ground squirrel	Rodentia	land	8.73	2	15.9	0.205	Callospermophilus_lateralis	species
+Calomys callosus	Vesper mouse	Rodentia	land		0	7.0	0.045		none
+Canis lupus familiaris	Dog	Carnivora	land	8.05	4	10.1	14	Canis_lupus	species
+Capra hircus	Goat	Artiodactyla	land		0	5.3	33.5	Capra_hircus	species
+Capreolus capreolus	Roe deer	Artiodactyla	land		0	3.0	14.8	Capreolus_pygargus	genus
+Cavia porcellus	Guinea pig	Rodentia	land	9.27	8	9.4	0.728	Cavia_porcellus	species
+Chaetophractus villosus	Large hairy armadillo	Cingulata	land	20.41	1				none
+Chinchilla lanigera	Chinchilla	Rodentia	land	12.53	1	12.5	0.42	Chinchilla_lanigera	species
+Chlorocebus aethiops	Grivet	Primates	land		0	10.0	4.75	Chlorocebus_sabaeus	genus
+Chlorocebus sabaeus	Green monkey	Primates	land	10.04	2			Chlorocebus_sabaeus	species
+Condylura cristata	Star-nosed mole	Eulipotyphla	land	10.32	1	10.3	0.06	Condylura_cristata	species
+Cricetomys gambianus	African giant pouched rat	Rodentia	land		0	8.3	1	Cricetomys_gambianus	species
+Cryptotis parva	Lesser short-tailed shrew	Eulipotyphla	land		0	9.1	0.005		none
+Dasypus novemcinctus	Long-nosed armadillo	Cingulata	land	17.94	2	17.4	3.5	Dasypus_novemcinctus	species
+Dendrohyrax validus	Tree hyrax	Hyracoidea	land	5.4	1	5.3	2.95		none
+Dicrostonyx torquatus	Arctic lemming	Rodentia	land	9.5	2				none
+Didelphis marsupialis	Southern opossum	Didelphimorphia	land	17.98	2				none
+Didelphis virginiana	North American Opossum	Didelphimorphia	land		0	18.0	1.7		none
+Elephas maximus	Asian elephant	Proboscidea	land		0	3.9	2547	Elephas_maximus	species
+Eptesicus fuscus	Big brown bat	Chiroptera	land		0	19.7	0.023	Eptesicus_fuscus	species
+Equus asinus	Donkey	Perissodactyla	land	3.1	1	3.1	187	Equus_asinus	species
+Equus caballus	Horse	Perissodactyla	land	3.62	2	2.9	521	Equus_caballus	species
+Erinaceus europaeus	European hedgehog	Eulipotyphla	land	14.16	3	10.1	0.77	Erinaceus_europaeus	species
+Erythrocebus patas	Patas monkey	Primates	land	10.8	1	10.9	10	Erythrocebus_patas	species
+Eulemur fulvus	Brown lemur	Primates	land	9.65	1			Eulemur_fulvus	species
+Eulemur mongoz	Mongoose lemur	Primates	land	11.88	1	9.5	1.67	Eulemur_mongoz	species
+Felis catus	Domestic cat	Carnivora	land	12.68	6	12.5	3.3	Felis_catus	species
+Galago senegalensis	Galago	Primates	land	7.47	1	9.8	0.2		none
+Giraffa camelopardalis	Giraffe	Artiodactyla	land		0	1.9	899.995	Giraffa_camelopardalis	species
+Halichoerus grypus	Gray seal	Carnivora	marine		0	6.2	85	Halichoerus_grypus	species
+Heterohyrax brucei	Gray hyrax	Hyracoidea	land	6.6	1	6.3	2.625	Heterohyrax_brucei	species
+Homo sapiens	Human	Primates	land		0	8.0	62	Homo_sapiens	species
+Ictidomys tridecemlineatus	Thirteen-lined ground squirrel	Rodentia	land	13.8	1	13.8	0.101	Ictidomys_tridecemlineatus	species
+Loxodonta africana	African elephant	Proboscidea	land		0	3.3	6654	Loxodonta_africana	species
+Lutreolina crassicaudata	Thick-tailed opossum	Didelphimorphia	land	19.39	1	19.4	0.37		none
+Macaca arctoides	Stump-tailed macaque	Primates	land	9.0	3			Macaca_fascicularis	genus
+Macaca mulatta	Rhesus monkey	Primates	land	10.23	4			Macaca_mulatta	species
+Macaca nemestrina	Pig-tailed macaque	Primates	land	10.9	2			Macaca_nemestrina	species
+Macaca radiata	Bonnet macaque	Primates	land	8.93	3			Macaca_fascicularis	genus
+Macaca sylvanus	Barbary ape	Primates	land	11.74	1			Macaca_fascicularis	genus
+Marmota flaviventris	Yellow-bellied marmot	Rodentia	land	3.92	1			Marmota_flaviventris	species
+Meriones unguiculatus	Mongolian gerbil	Rodentia	land	14.18	2	14.2	0.053	Meriones_unguiculatus	species
+Mesocricetus auratus	Golden hamster	Rodentia	land	14.98	2	14.3	0.12	Mesocricetus_auratus	species
+Microcebus murinus	Gray mouse lemur	Primates	land	15.36	1			Microcebus_murinus	species
+Mus musculus	House mouse	Rodentia	land	12.24	3	12.5	0.022	Mus_musculus	species
+Myotis lucifugus	Little brown bat	Chiroptera	land		0	19.9	0.01	Myotis_lucifugus	species
+Nannospalax ehrenbergi	Ehrenberg's mole-rat	Rodentia	land	12.43	1			Nannospalax_galili	genus
+Nannospalax leucodon	Mole rat	Rodentia	land		0	10.6	0.122	Nannospalax_galili	genus
+Neofiber alleni	Round-tailed muskrat	Rodentia	land		0	14.6	0.266		none
+Neotomodon alstoni	Mexican volcano mouse	Rodentia	land	17.3	1				none
+Nycticebus coucang	Slow loris	Primates	land		0	11.0	1.4	Nycticebus_coucang	species
+Octodon degus	Degu	Rodentia	land	7.97	2	7.7	0.21	Octodon_degus	species
+Onychomys leucogaster	Northern grasshopper mouse	Rodentia	land		0	14.5	0.028	Onychomys_torridus	genus
+Ornithorhynchus anatinus	Platypus	Monotremata	land	14.2	1			Ornithorhynchus_anatinus	species
+Oryctolagus cuniculus	Rabbit	Lagomorpha	land	8.8	3	8.4	2.5	Oryctolagus_cuniculus	species
+Ovis aries	Sheep	Artiodactyla	land	3.84	1	3.8	55.5	Ovis_aries	species
+Pan troglodytes	Chimpanzee	Primates	land	12.62	3	9.7	52.2	Pan_troglodytes	species
+Panthera leo	Lion	Carnivora	land		0	13.5	161.499	Panthera_leo	species
+Panthera onca	Jaguar	Carnivora	land		0	10.4	100	Panthera_onca	species
+Panthera tigris	Tiger	Carnivora	land		0	15.8	162.564	Panthera_tigris	species
+Papio anubis	Olive baboon	Primates	land	9.84	1			Papio_anubis	species
+Papio cynocephalus	Yellow baboon	Primates	land	6.19	1			Papio_anubis	genus
+Papio hamadryas	Hamadryas baboon	Primates	land	9.83	1			Papio_anubis	genus
+Papio papio	Guinea baboon	Primates	land	9.88	4			Papio_anubis	genus
+Paraechinus hypomelas	Desert hedgehog	Eulipotyphla	land	10.32	1	10.3	0.55		none
+Perodicticus potto	Potto	Primates	land		0	11.0	1.1		none
+Perognathus longimembris	Little pocket mouse	Rodentia	land	6.7	1			Perognathus_longimembris	species
+Peromyscus maniculatus	Deer mouse	Rodentia	land		0	11.5	0.021	Peromyscus_maniculatus	species
+Phocoena phocoena	Common porpoise	Artiodactyla	marine		0	5.6	53.18	Phocoena_phocoena	species
+Phodopus sungorus	Winter white dwarf hamster	Rodentia	land	14.28	4			Phodopus_roborovskii	genus
+Potorous tridactylus	Potoroo	Diprotodontia	land	10.66	2	11.1	1.1		none
+Priodontes maximus	Giant armadillo	Cingulata	land	18.1	1	18.1	60		none
+Procavia capensis	Rock hyrax	Hyracoidea	land	5.45	1	5.4	3.6	Procavia_capensis	species
+Pusa caspica	Caspian seal	Carnivora	marine		0	3.5	86		none
+Rattus norvegicus	Laboratory rat	Rodentia	land	12.41	11	13.0	0.32	Rattus_norvegicus	species
+Rhabdomys pumilio	African striped mouse	Rodentia	land		0	8.7	0.044		none
+Saimiri sciureus	Squirrel monkey	Primates	land	9.6	3	9.6	0.743	Saimiri_boliviensis	genus
+Scalopus aquaticus	Eastern American mole	Eulipotyphla	land	8.45	1	8.4	0.075	Scalopus_aquaticus	species
+Sigmodon hispidus	Cotton rat	Rodentia	land	11.3	1	11.3	0.148	Sigmodon_hispidus	species
+Spermophilus citellus	European ground squirrel	Rodentia	land	6.13	2			Spermophilus_citellus	species
+Suncus murinus	Musk shrew	Eulipotyphla	land	12.8	1	12.8	0.048	Suncus_etruscus	genus
+Sus scrofa	Pig	Artiodactyla	land		0	9.1	86.25	Sus_scrofa	species
+Tachyglossus aculeatus	Short-nosed echidna	Monotremata	land	15.7	3	8.6	4.5	Tachyglossus_aculeatus	species
+Tamias sibiricus	Siberian chipmunk	Rodentia	land	10.97	2				none
+Tamias striatus	Eastern American chipmunk	Rodentia	land		0	15.8	0.112		none
+Tapirus terrestris	Brazilian tapir	Perissodactyla	land		0	4.4	207.501	Tapirus_terrestris	species
+Tenrec ecaudatus	Tenrec	Afrosoricida	land	15.6	1	15.6	0.9	Tenrec_ecaudatus	species
+Trichosurus vulpecula	Phalanger	Diprotodontia	land		0	13.7	1.62	Trichosurus_vulpecula	species
+Tupaia glis	Tree shrew	Scandentia	land	15.84	1	8.9	0.104	Tupaia_belangeri	genus
+Tursiops truncatus	Bottle-nosed dolphin	Artiodactyla	marine		0	5.2	173.33	Tursiops_truncatus	species
+Urocitellus parryii	Arctic ground squirrel	Rodentia	land	16.08	1	16.6	0.92	Urocitellus_parryii	species
+Vulpes lagopus	Arctic fox	Carnivora	land		0	12.5	3.38	Vulpes_lagopus	species
+Vulpes vulpes	Red fox	Carnivora	land	9.72	1	9.8	4.23	Vulpes_vulpes	species

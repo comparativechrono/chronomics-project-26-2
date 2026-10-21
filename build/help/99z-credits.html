@@ -1,0 +1,44 @@
+<!-- id: h-credits | title: Credits and licences | group: Reference | summary: The software and data the workbench is built from | keys: credits licences licenses copyright open source ncbi refseq toga zoonomia phylogeny of sleep msleep upham alphafold gnomad genebass uk biobank alphamissense dna zoo sra biowasm genomics-wasm dnaio xopen croaring eigen macs hmmlearn hmmratac numpy scipy scikit-learn pandas plink plink2 libdeflate zstd 1000 genomes boost hcc1395 seqc2 pyodide webr ngl codemirror marked dompurify jszip viz graphviz gpl mit data sources cite citation -->
+<h1><!--ICON:book-->Credits and licences</h1>
+<p class="lede">The workbench is the Bioinformatics workbench of the Chronomic Medicine Group, cut down to what this project needs. It is built from open-source software and open data, each under its own licence. The full list, with the licence texts and the source code of the GPL programs, is in <a href="THIRD_PARTY.md" target="_blank" rel="noopener">THIRD_PARTY.md</a> and the folder <code>assets/vendor/licenses/</code> of the site.</p>
+
+<h2>Programs and languages</h2>
+<table>
+<tr><th>Component</th><th>Licence</th></tr>
+<tr><td>Biowasm and Aioli (Robert Aboukhalil) – the WebAssembly builds of most programs, and the runner</td><td>MIT</td></tr>
+<tr><td>seqtk, wgsim, minimap2, SAMtools, BCFtools, HTSlib, bedtools, gffread, LASTZ, jq</td><td>MIT (HTSlib also modified BSD)</td></tr>
+<tr><td>gffread (with GCLib)</td><td>MIT (GCLib: Artistic 2.0)</td></tr>
+<tr><td>Kalign</td><td>GNU GPL 3</td></tr>
+<tr><td>PLINK 2 (Shaun Purcell, Christopher Chang, Benjamin Demaille and others; with libdeflate, zstd, SIMDe, SFMT, QD and zlib) – compiled for the browser by the genomics-wasm project</td><td>GNU GPL 3 or later (its library parts also LGPL 3 or later; libdeflate and SIMDe MIT, zstd BSD, SFMT and QD BSD-style, zlib its own)</td></tr>
+<tr><td>FastTree</td><td>GNU GPL 2 or later</td></tr>
+<tr><td>MUSCLE 3.8, seq-align</td><td>public domain</td></tr>
+<tr><td>GNU coreutils, grep, sed, gawk, diffutils</td><td>GNU GPL 3 or later</td></tr>
+<tr><td>Pyodide (CPython for the browser) and its packages</td><td>MPL 2.0 (Python: PSF licence; each package its own)</td></tr>
+<tr><td>webR (R for the browser)</td><td>GNU GPL 3 (R: GNU GPL 2 and 3); its JavaScript: MIT</td></tr>
+<tr><td>locfit (R package, built for the Bioinformatics workbench with genomics-wasm's recipe); the other R packages are downloaded when used</td><td>locfit: GNU GPL 2 or later; each package its own</td></tr>
+<tr><td>Graphviz, through Viz.js</td><td>EPL 1.0 (Viz.js: MIT)</td></tr>
+</table>
+
+<h2>Libraries of the page</h2>
+<table>
+<tr><th>Library</th><th>Licence</th></tr>
+<tr><td>NGL Viewer (3D viewer)</td><td>MIT</td></tr>
+<tr><td>CodeMirror 5 (editors)</td><td>MIT</td></tr>
+<tr><td>marked (Markdown)</td><td>MIT</td></tr>
+<tr><td>DOMPurify (safe display of AI answers)</td><td>Apache 2.0 or MPL 2.0</td></tr>
+<tr><td>IPython and jedi (Spyder’s console and code completion), from Pyodide’s packages</td><td>BSD 3-Clause (IPython), MIT (jedi)</td></tr>
+<tr><td>pyflakes (Spyder’s code analysis)</td><td>MIT</td></tr>
+<tr><td>Shinylive (Posit): Shiny apps in RStudio reach their R in the way that Shinylive’s do – written again for the workbench</td><td>MIT</td></tr>
+<tr><td>JSZip (zip files)</td><td>MIT or GNU GPL 3</td></tr>
+<tr><td>PDF.js (PDF files in the Files tab)</td><td>Apache 2.0</td></tr>
+</table>
+<p>Snakemake is re-implemented for the browser, after the real program (<a href="https://snakemake.github.io" target="_blank" rel="noopener">Snakemake</a>); it contains no code of that project.</p>
+<p>The RStudio and Spyder of the IDE tab imitate <a href="https://posit.co/products/open-source/rstudio/" target="_blank" rel="noopener">RStudio</a> (Posit) and <a href="https://www.spyder-ide.org" target="_blank" rel="noopener">Spyder</a> (the Spyder project) for teaching. They were written for the workbench, contain no code of those programs, and are not made or endorsed by Posit or by the Spyder project.</p>
+
+<h2>Data and services</h2>
+<ul>
+  <li><b>The project's data</b> (<code>/data/examples/fnss</code>): RefSeq proteins and the orthologue lists of NCBI Gene; TOGA's alignments of hundreds of mammal genomes (Kirilenko et al. 2023); the Phylogeny of Sleep database (McNamara et al. 2008; Capellini et al. 2008) and the msleep table of ggplot2 (from Savage and West 2007); the dated mammal tree of Upham et al. (2019); AlphaFold DB models (Varadi et al. 2024); gnomAD v4.1 (Chen et al. 2024); Genebass, the UK Biobank exome results (Karczewski et al. 2022); AlphaMissense (Cheng et al. 2023; CC BY-NC-SA 4.0); and reads of a Brazilian porcupine from the DNA Zoo (SRA run SRR10331604). <a href="#h-data">The project data</a> lists every file, its source and the papers to cite.</li>
+  <li>The practice files next to it (<code>reads/</code>, <code>variants/</code>, <code>annotation/</code>, <code>sequences/</code>, <code>plink2/</code>) are those of the Bioinformatics workbench: the 1000 Genomes Project (sample NA12878), UCSC (hg19), Ensembl (GRCh37), NCBI GenBank, UniProt, and PLINK 2's own test files.</li>
+  <li>The Databases tab uses the public services of EMBL-EBI (UniProt, AlphaFold DB with Google DeepMind, InterPro, Ensembl, ENA, BLAST, Europe PMC), the RCSB PDB and NCBI (E-utilities). Cite the databases you use in your work.</li>
+</ul>
+<div class="tryrow"><button class="do" type="button" data-open="/data/examples/fnss/README.md">Open the README of the project data</button></div>

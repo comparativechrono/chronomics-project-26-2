@@ -1,0 +1,145 @@
+<!-- id: h-s05 | title: Stage 5 · Where the changes happened | group: The project | stage: 5 | tab: yes | tabtitle: Stage 5 – Where the changes happened | summary: The dated mammal tree in R (ape); the amino acids of GRM1 458 and SIK3 783 on it; ancestral states with a Markov model (ace); counting the changes along the branches | keys: stage 5 phylogeny tree newick ape read.tree keep.tip plot axisPhylo fan tiplabels nodelabels pie getMRCA extract.clade node.depth.edgelength ancestral state reconstruction ace equal rates markov model ER likelihood laurasiatheria convergence parallel change grm1 sik3 npsr1 porcupine -->
+<h1>Stage 5 · Where the changes happened</h1>
+<div class="stage-meta"><span class="when">Weeks 5–6</span><span>about 5 hours</span><span class="stage-progress"></span></div>
+<p class="lede">Two of the seven positions differ between mammals. Did each change once, long ago, and pass to all the descendants – or many times, independently? The family tree of the mammals tells you. In this stage you draw it in R, put the amino acids on it, and work out what the ancestors had.</p>
+<div class="skills"><b>You will learn</b><ul>
+<li>trees in R with the package <code>ape</code>: reading, pruning, drawing, measuring</li>
+<li>what a node of a tree is, and how old it is</li>
+<li>to infer the states of ancestors with a model of change along the branches (<code>ace</code>)</li>
+<li>to count the changes – and why that matters for everything that follows</li>
+</ul></div>
+
+<h2>1. The tree of the mammals</h2>
+<p><code>mammals.nwk</code> is the dated tree of Upham et al. (2019), cut down to the 485 species of your files. It is in Newick format: brackets for groups, and after each colon the length of a branch in millions of years. Open the notebook of this stage and load <code>ape</code>, the R package for trees (the first time, it is downloaded: it takes a little while):</p>
+<div class="tryrow"><button class="do" type="button" data-stage-nb="r|stage05-tree|Stage 5 – Where the changes happened">Open my stage 5 notebook</button></div>
+<pre class="code" data-run="r"><code>library(ape)
+tree &lt;- read.tree("/data/examples/fnss/tree/mammals.nwk")
+tree
+max(node.depth.edgelength(tree))</code></pre>
+<p><code>node.depth.edgelength</code> gives, for every tip and node, its distance from the root along the branches: the largest is the age of the root.</p>
+<div class="callout check"><div class="co-t">Check</div><p>485 tips and 484 internal nodes. The root is <b>179</b> million years old: the split between the egg-laying platypus and echidna and all other mammals.</p></div>
+<p>A tree of 485 species is too big to read. <code>keep.tip</code> prunes it to the species you name – here twelve – and <code>axisPhylo</code> adds a time scale:</p>
+<pre class="code" data-run="r"><code>twelve &lt;- c("Homo_sapiens", "Pan_troglodytes", "Mus_musculus", "Rattus_norvegicus", "Canis_lupus", "Felis_catus",
+            "Bos_taurus", "Sus_scrofa", "Loxodonta_africana", "Myotis_lucifugus", "Monodelphis_domestica",
+            "Ornithorhynchus_anatinus")
+small &lt;- keep.tip(tree, twelve)
+plot(small)
+axisPhylo()</code></pre>
+<p>Each <b>node</b>, where branches split, is a common ancestor. The tree is drawn so that the tips line up on the right: today. Read it from the root (left) to the tips.</p>
+<div class="task"><div class="task-t">Your turn</div>
+<p>How long ago did humans share an ancestor with mice? With dogs? <code>getMRCA(tree, c("Homo_sapiens", "Mus_musculus"))</code> gives the node of the most recent common ancestor; its age is the root's age minus its distance from the root. Write a little function, <code>age(tree, species)</code>.</p>
+<details class="hint answer"><summary>Show the answer</summary>
+<pre class="code" data-run="r"><code>age &lt;- function(tr, sp) {
+  d &lt;- node.depth.edgelength(tr)
+  max(d) - d[getMRCA(tr, sp)]
+}
+age(tree, c("Homo_sapiens", "Mus_musculus"))
+age(tree, c("Homo_sapiens", "Canis_lupus"))</code></pre>
+<p>About 75 million years for the mouse, and 82 for the dog – the dog is a slightly more distant relative of ours than the mouse is.</p></details></div>
+
+<h2>2. GRM1 458 on the tree</h2>
+<p>Read your table of amino acids from stage 4, keep the rows of GRM1 S458, and keep the species that are in the tree – a few, such as species named since the tree was made, are not. Then prune the tree to those species, and put the amino acids in the order of the tree's tips:</p>
+<pre class="code" data-run="r"><code>res &lt;- read.delim("~/project/results/species_residues.tsv")
+grm &lt;- res[res$variant == "GRM1_S458A", ]
+nrow(grm)
+grm$species[!(grm$species %in% tree$tip.label)]
+grm &lt;- grm[grm$species %in% tree$tip.label, ]
+x &lt;- setNames(grm$residue, grm$species)
+t2 &lt;- keep.tip(tree, names(x))
+x &lt;- x[t2$tip.label]
+table(x)</code></pre>
+<p>Draw it as a circle (<code>type = "fan"</code>), without the names (there are too many), with a coloured dot at each tip:</p>
+<pre class="code" data-run="r"><code>cols &lt;- c(S = "#2a78d6", T = "#eb6834")
+plot(t2, type = "fan", show.tip.label = FALSE, edge.width = 0.5)
+tiplabels(pch = 19, col = cols[x], cex = 0.5)
+legend("topleft", legend = c("S (serine)", "T (threonine)"), col = cols, pch = 19, bty = "n")</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>459 species in the tree (11 of the 470 are not): <b>191 S</b> and <b>268 T</b>. The T species form one great block of the circle, with only a few blue dots inside it.</p></div>
+
+<h2>3. What did the ancestors have?</h2>
+<p>Nobody sequenced the ancestors, but their amino acids can be inferred from their descendants. <code>ace</code> (<i>ancestral character estimation</i>) fits a simple model of evolution: along every branch, S can change to T and T to S, at a rate that is the same both ways (<code>model = "ER"</code>, equal rates), and the longer the branch, the more likely a change. It finds the rate that best explains the tips, and gives each node the probability of each amino acid:</p>
+<pre class="code" data-run="r"><code>fit &lt;- ace(x, t2, type = "discrete", model = "ER")
+fit$rates
+head(round(fit$lik.anc, 3))</code></pre>
+<p>R may print a few warnings (<code>NaNs produced</code>, <code>Inf replaced by maximum positive value</code>): they come from <code>ace</code>'s estimate of how uncertain the rate is, which it cannot calculate well here; the rate and the probabilities are fine.</p>
+<p><code>fit$lik.anc</code> has a row for each node – the first is the root – and a column for each amino acid. The great block of T species is the <b>Laurasiatheria</b>: carnivores, hoofed mammals and whales, bats, shrews and hedgehogs. Their common ancestor is the node where the lines to the cow and to the shrew meet. The nodes are numbered after the tips, so its row is its number minus the number of tips:</p>
+<pre class="code" data-run="r"><code>round(fit$lik.anc[1, ], 3)
+laur &lt;- getMRCA(t2, c("Bos_taurus", "Sorex_araneus"))
+round(fit$lik.anc[laur - Ntip(t2), ], 3)
+laur_tips &lt;- extract.clade(t2, laur)$tip.label
+length(laur_tips)
+table(x[laur_tips])
+names(x[laur_tips])[x[laur_tips] == "S"]
+table(x[!(names(x) %in% laur_tips)])</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>The root of the mammals had <b>S</b> (probability 1.00); the ancestor of the Laurasiatheria, about 79 million years ago, had <b>T</b> (1.00). Of the 272 laurasiatherians, 268 have T; the four with S are three pipistrelle bats and the European mole. All 187 other mammals have S.</p></div>
+<p>Show the two ancestors on the tree, as pies of their probabilities:</p>
+<pre class="code" data-run="r"><code>plot(t2, type = "fan", show.tip.label = FALSE, edge.width = 0.5)
+tiplabels(pch = 19, col = cols[x], cex = 0.5)
+nodelabels(node = Ntip(t2) + 1, pie = fit$lik.anc[1, , drop = FALSE], piecol = cols, cex = 1.2)
+nodelabels(node = laur, pie = fit$lik.anc[laur - Ntip(t2), , drop = FALSE], piecol = cols, cex = 1.2)
+legend("topleft", legend = c("S (serine)", "T (threonine)"), col = cols, pch = 19, bty = "n")</code></pre>
+<p>Save it for your report (as in every stage from now on: <code>png()</code>, the plotting code, <code>dev.off()</code>), as <code>~/project/figures/fig_grm1_tree.png</code>.</p>
+
+<h3>Count the changes</h3>
+<p>Give each node its most likely amino acid, then compare the two ends of every branch: where they differ, the amino acid changed on that branch. <code>t2$edge</code> is a table of the branches, the node they come from in the first column and the node or tip they lead to in the second:</p>
+<pre class="code" data-run="r"><code>anc &lt;- colnames(fit$lik.anc)[apply(fit$lik.anc, 1, which.max)]
+states &lt;- c(x, anc)          # tips first, then the nodes, in the tree's numbering
+from &lt;- states[t2$edge[, 1]]
+to &lt;- states[t2$edge[, 2]]
+table(from, to)</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>Three changes in 179 million years of mammal evolution: <b>one S→T</b>, on the branch to the Laurasiatheria, and two T→S, back again (in the pipistrelles and in the mole). All 268 T species inherited their T from one ancestor.</p></div>
+
+<h2>4. SIK3 783</h2>
+<div class="task"><div class="task-t">Your turn</div>
+<p>Do the same for SIK3 N783, which has three amino acids: N, S and T. Make <code>y</code> and <code>t3</code> as you made <code>x</code> and <code>t2</code>, draw the tree with three colours, fit <code>ace</code>, and answer: what did the root of the mammals have? What did the ancestor of the placental mammals have (the node of human and elephant)? How many changes are there, of which kinds?</p>
+<details class="hint"><summary>Show a hint</summary><p>Three colours: <code>cols3 &lt;- c(N = "#1baf7a", S = "#2a78d6", T = "#6250d6")</code>. Everything else is the same code with <code>"SIK3_N783Y"</code>, <code>y</code> and <code>t3</code>.</p></details>
+<details class="hint answer"><summary>Show the answer</summary>
+<pre class="code" data-run="r"><code>sik &lt;- res[res$variant == "SIK3_N783Y" &amp; res$species %in% tree$tip.label, ]
+y &lt;- setNames(sik$residue, sik$species)
+t3 &lt;- keep.tip(tree, names(y))
+y &lt;- y[t3$tip.label]
+table(y)
+cols3 &lt;- c(N = "#1baf7a", S = "#2a78d6", T = "#6250d6")
+plot(t3, type = "fan", show.tip.label = FALSE, edge.width = 0.5)
+tiplabels(pch = 19, col = cols3[y], cex = 0.5)
+fit3 &lt;- ace(y, t3, type = "discrete", model = "ER")
+round(fit3$lik.anc[1, ], 3)
+plac &lt;- getMRCA(t3, c("Homo_sapiens", "Loxodonta_africana"))
+round(fit3$lik.anc[plac - Ntip(t3), ], 3)
+anc3 &lt;- colnames(fit3$lik.anc)[apply(fit3$lik.anc, 1, which.max)]
+states3 &lt;- c(y, anc3)
+table(from = states3[t3$edge[, 1]], to = states3[t3$edge[, 2]])</code></pre>
+<p>468 species: N 353, S 105, T 10. The root is most likely <b>S</b> (0.785) – the platypus, echidna and most marsupials have S – but the ancestor of the placental mammals had <b>N</b> (1.00), as humans do. Then S arose from N again and again: <b>18 times</b> N→S (and twice N→T, once S→N, once S→T) – in the cats and their relatives, in the whales, in fruit bats, in elephants, in tenrecs, in anteaters, in single species here and there. A pattern as different from GRM1's as it could be.</p></details></div>
+
+<h2>5. The porcupine</h2>
+<p>NPSR1 206 has H in a single species, the Brazilian porcupine. What do its relatives have? Look for the stretch around 206 – <code>PD</code>, any one amino acid, <code>S</code>, any one, <code>WTPY</code> – in the TOGA proteins of the porcupines and the guinea pig, in the terminal. awk's <code>match</code> finds a pattern in a string, and <code>substr($2, RSTART, RLENGTH)</code> prints what it found:</p>
+<pre class="code" data-run="term"><code>seqtk seq -l0 /data/examples/fnss/orthologs/NPSR1_toga_mammals.fasta | paste - - | grep -E "^&gt;(Homo_sapiens|Coendou_prehensilis|Erethizon_dorsatum|Hystrix_cristata|Cavia_porcellus) " | awk -F'\t' '{split($1, n, " "); match($2, /PD.S.WTPY/); print substr(n[1], 2), substr($2, RSTART, RLENGTH)}'</code></pre>
+<p>Back in R, when did the two American porcupines split? (<code>age</code> is your function from the first <i>Your turn</i>.)</p>
+<pre class="code" data-run="r"><code>age(tree, c("Coendou_prehensilis", "Erethizon_dorsatum"))</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>The human, the guinea pig and the North American porcupine <i>Erethizon dorsatum</i> have <code>PDDSYWTPY</code>; the Brazilian porcupine <code>PDDSHWTPY</code>; the crested porcupine <code>PDNSCWTPY</code> – C at 206, and another change two positions before it. The two American porcupines split about <b>10.5</b> million years ago.</p></div>
+<p>The North American porcupine is not in your table of stage 4: its protein is fine, but kalign put another stretch of it against human 196–216, and the window check set it aside – a check that throws out a good sequence now and then is better than one that lets a bad one in. Its Y says that if the Brazilian porcupine's H is real, it arose on the Brazilian porcupine's own branch, in the last ten million years – one change, in one species. Is it real? That needs the porcupine's raw DNA (stage 10).</p>
+
+<div class="callout think"><div class="co-t">Think</div><p>GRM1 458 changed once, about 80 million years ago, and the T has been kept by 268 species since – carnivores, bats, horses, cows, whales. SIK3 783 changed to S at least 18 separate times. What does each pattern say about how much the position matters? And here is why it matters for the next stages: if T species sleep less than S species, is that 268 pieces of evidence – or one?</p></div>
+
+<div class="callout log"><div class="co-t">For your logbook</div>
+<ul>
+<li>What a node is, and what <code>ace</code> assumes.</li>
+<li>GRM1 458: when the T arose, in which group, and the exceptions.</li>
+<li>SIK3 783: the ancestral states and the number of changes.</li>
+<li>Your tree figures, with a caption for each.</li>
+</ul></div>
+
+<h2>Going further</h2>
+<ul>
+<li><b>A different model.</b> <code>model = "ARD"</code> (all rates different) lets S→T and T→S have their own rates. Does it change the ancestral states? <code>AIC(fit)</code> and <code>AIC(fit_ard)</code> say which model fits better, allowing for the extra rate.</li>
+<li><b>Which branches?</b> For SIK3, list the species below each change: for each branch where <code>from != to</code>, <code>extract.clade(t3, node)$tip.label</code> (or the tip's own name if the branch leads to a tip). Which groups gained S?</li>
+</ul>
+<ul class="checklist">
+<li data-check="s5-tree">I read the tree into R, pruned it and drew it with a time scale.</li>
+<li data-check="s5-grm1">I put GRM1 458 on the tree.</li>
+<li data-check="s5-ace">I inferred the ancestral states with <code>ace</code>, and found when the T arose.</li>
+<li data-check="s5-count">I counted the changes along the branches.</li>
+<li data-check="s5-sik3">I did the same for SIK3 783.</li>
+<li data-check="s5-porcupine">I placed the porcupine's H on the tree.</li>
+<li data-check="s5-log">I saved my tree figures and wrote this stage up.</li>
+</ul>
+<div class="stage-nav"><button type="button" data-goto="h-s04"><small>Back</small>← Stage 4 · Conserved or not?</button><button class="next" type="button" data-goto="h-s06"><small>Next</small>Stage 6 · How long mammals sleep →</button></div>

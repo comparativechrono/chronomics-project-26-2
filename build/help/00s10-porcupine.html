@@ -1,0 +1,74 @@
+<!-- id: h-s10 | title: Stage 10 · A porcupine with a human mutation | group: The project | stage: 10 | tab: yes | tabtitle: Stage 10 – A porcupine with a human mutation | summary: The Brazilian porcupine's genome has the short sleepers' NPSR1 Y206H. Check it in the raw sequencing reads of the same animal: find codon 206 on both strands, count the alleles, test for heterozygosity, and follow a marker into the intron | keys: stage 10 reads illumina read pair sra ena srr10331604 coendou prehensilis brazilian porcupine npsr1 y206h codon tac cac grep -o reverse complement rev tr strand heterozygous binomial test binom.test coverage paralog intron haplotype dna zoo -->
+<h1>Stage 10 · A porcupine with a human mutation</h1>
+<div class="stage-meta"><span class="when">Weeks 10–11</span><span>about 4 hours</span><span class="stage-progress"></span></div>
+<p class="lede">In stage 4 one species stood out: the Brazilian porcupine, <i>Coendou prehensilis</i>, has H at NPSR1 206 – the amino acid of the short sleepers' mutation, Y206H, at a position that is Y in 450 other mammals. Is it real? A genome assembly is a summary of millions of reads, and it can be wrong. In this stage you go back to the raw reads of the same animal and look for yourself.</p>
+<div class="skills"><b>You will learn</b><ul>
+<li>what sequencing reads are, and how they become a genome</li>
+<li>to find a short sequence in reads on both strands of the DNA: <code>grep -o</code>, <code>rev</code> and <code>tr</code></li>
+<li>to tell a heterozygote from a homozygote – and from an error – with a binomial test</li>
+<li>to check that two alleles come from one gene, not two</li>
+</ul></div>
+
+<h2>1. Where the porcupine's genome comes from</h2>
+<p>The <b>DNA Zoo</b> sequences the genomes of animals – often from zoos – with short reads and Hi-C, and assembles them into chromosomes (Dudchenko et al. 2017). For the Brazilian porcupine, its Illumina machine read 463,919,562 pairs of reads: each pair two reads of 151 letters, from the two ends of one fragment of DNA, a few hundred letters long. TOGA's prediction of the porcupine's NPSR1 comes from the assembly made from those reads. Look at the sequencing run in the European Nucleotide Archive:</p>
+<div class="tryrow"><button class="do" type="button" data-api="ena:runs:SRR10331604">Run SRR10331604 in ENA</button></div>
+<p>Downloading all the reads – some 140 billion letters – would not fit in your browser. The project has done the searching for you: <code>coendou_NPSR1_reads.txt</code> holds the 57 read pairs, of all 463 million, that contain the 20 letters just before codon 206 or the 20 just after it, on either strand.</p>
+<pre class="code" data-run="term"><code>cd ~/project
+wc -l /data/examples/fnss/reads/coendou_NPSR1_reads.txt
+head -2 /data/examples/fnss/reads/coendou_NPSR1_reads.txt | cut -c 1-100
+awk '{print length($0)}' /data/examples/fnss/reads/coendou_NPSR1_reads.txt | sort | uniq -c</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>57 lines, each of 302 letters: the two reads of a pair, 151 + 151, joined.</p></div>
+
+<h2>2. Find codon 206</h2>
+<p>Around codon 206, the porcupine's <i>NPSR1</i> reads <code>…CCTGATGACTCC</code>, then the codon, then <code>TGGACTCCATAC…</code> (the protein: …P D D S <b>Y/H</b> W T P Y…). <code>grep -o</code> with a pattern of the two flanks and three dots – a dot matches any one letter – picks out the codon with its flanks from every read that has them; <code>cut -c 13-15</code> keeps letters 13 to 15, the codon:</p>
+<pre class="code" data-run="term"><code>grep -o "CCTGATGACTCC...TGGACTCCATAC" /data/examples/fnss/reads/coendou_NPSR1_reads.txt | head -3
+grep -o "CCTGATGACTCC...TGGACTCCATAC" /data/examples/fnss/reads/coendou_NPSR1_reads.txt | cut -c 13-15 | sort | uniq -c</code></pre>
+<p>Two codons: <code>TAC</code>, tyrosine (Y) – the amino acid of other mammals – and <code>CAC</code>, histidine (H), the porcupine assembly's. But only 26 of the 57 reads matched. The others are there because they hold the flank on the <b>other strand</b>: DNA has two strands, read in opposite directions, and a read can come from either. To read them in the gene's direction, take their <b>reverse complement</b>: reverse the letters (<code>rev</code>) and swap A↔T and C↔G (<code>tr ACGT TGCA</code>):</p>
+<pre class="code" data-run="term"><code>echo "ATGCCCTTA" | rev | tr ACGT TGCA
+rev /data/examples/fnss/reads/coendou_NPSR1_reads.txt | tr ACGT TGCA &gt; results/coendou_reads_revcomp.txt
+grep -o "CCTGATGACTCC...TGGACTCCATAC" results/coendou_reads_revcomp.txt | cut -c 13-15 | sort | uniq -c
+cat /data/examples/fnss/reads/coendou_NPSR1_reads.txt results/coendou_reads_revcomp.txt | grep -o "CCTGATGACTCC...TGGACTCCATAC" | cut -c 13-15 | sort | uniq -c</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>On the strand as read: 17 CAC and 9 TAC; on the other strand: 13 CAC and 11 TAC. Together: <b>30 reads with CAC (His)</b> and <b>20 with TAC (Tyr)</b> – and no other codon.</p></div>
+
+<h2>3. One allele or two?</h2>
+<p>An animal has two copies of each chromosome. If both carried CAC (a homozygote), nearly every read would say CAC; a few TAC could only be errors – and sequencing errors are rare, well under 1 in 100 letters. If one copy carried CAC and the other TAC (a heterozygote), about half the reads would come from each. Which fits 30 and 20? A <b>binomial test</b> asks whether 30 out of 50 is compatible with a probability of one half:</p>
+<div class="tryrow"><button class="do" type="button" data-stage-nb="r|stage10-porcupine|Stage 10 – A porcupine with a human mutation">Open my stage 10 notebook</button></div>
+<pre class="code" data-run="r"><code>binom.test(30, 50, p = 0.5)</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>P = <b>0.20</b>: 30 of 50 is quite compatible with one half (the 95% confidence interval of the share of CAC reads is 0.45 to 0.74). The porcupine that was sequenced is <b>heterozygous</b>: one of its copies of <i>NPSR1</i> codes for Y206, the other for H206 – the human short sleepers' genotype. The assembly showed only one of the two.</p></div>
+<div class="task"><div class="task-t">Your turn</div>
+<p>Could 20 TAC reads be errors in a CAC homozygote, or 30 CAC reads errors in a TAC homozygote? Use <code>binom.test</code> with a much smaller <code>p</code>: say an error rate of 1 in 100 (<code>p = 0.01</code>), for 20 of 50.</p>
+<details class="hint answer"><summary>Show the answer</summary>
+<pre class="code" data-run="r"><code>binom.test(20, 50, p = 0.01)</code></pre>
+<p>R prints <code>p-value &lt; 2.2e-16</code>: smaller than it bothers to print (<code>binom.test(20, 50, p = 0.01)$p.value</code> gives about 4 × 10<sup>−27</sup>). Even with an error rate ten times higher than Illumina's, errors could not make 20 of 50 reads: both alleles are real.</p></details></div>
+
+<h2>4. One gene, or two?</h2>
+<p>There is one more way to get two kinds of read: if the porcupine had two copies of the gene – a duplication – one with CAC and one with TAC, both homozygous. Two checks tell these apart.</p>
+<p><b>The number of reads.</b> 463,919,562 pairs of 302 letters are about 140 billion letters. A rodent genome has about 2.5–3.5 billion, so each position is covered by about 40–55 reads, and some 35–45 of them reach far enough on both sides to include the whole 27-letter pattern. You found 50. A duplicated gene would have twice as many.</p>
+<p><b>A marker in the intron.</b> Codon 206 is near the end of an exon; about 100 letters further on, in the intron, the reads have one of two four-letter sequences, after the 13 letters <code>CAGGGAGCTCCTG</code>. Which goes with which codon? Here <code>grep -o "…*"</code> keeps everything from the pattern to the end of the read, and <code>awk</code> prints the codon and the four letters after the intron's 13-letter anchor (<code>index</code> finds where the anchor starts) – for the reads long enough to reach it:</p>
+<pre class="code" data-run="term"><code>cat /data/examples/fnss/reads/coendou_NPSR1_reads.txt results/coendou_reads_revcomp.txt | grep -o "CCTGATGACTCC...TGGACTCCATAC.*" | awk '{codon = substr($0, 13, 3); i = index($0, "CAGGGAGCTCCTG"); if (i &gt; 0 &amp;&amp; length($0) &gt;= i + 16) print codon, substr($0, i + 13, 4)}' | sort | uniq -c</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>Every CAC read that reaches the intron has <code>CATC</code> there (10 reads), every TAC read <code>TGTC</code> (5). The two codons travel with two versions of the same intron: two <b>haplotypes</b> of one stretch of DNA, as expected of the two chromosomes of a heterozygote – and the number of reads is that of a single-copy gene.</p></div>
+
+<h2>5. What it means</h2>
+<p>One Brazilian porcupine carries, on one of its chromosomes, the NPSR1 change Y206H that shortens sleep in a human family and in mice made to carry it, at a position that is Y in every one of 450 other mammals in your table. Its closest relative in the data, the North American porcupine, has Y; the crested porcupine of Africa has another change at the same position, C (stage 5). Nothing is known about how this animal slept.</p>
+<div class="callout think"><div class="co-t">Think</div><p>What would you need to know next? How common is H206 in Brazilian porcupines – one animal is one animal. Do porcupines that carry it sleep less, or differently? Does the porcupine's receptor, with H206, respond more strongly to neuropeptide S, as the human Y206H receptor does (Xing et al. 2019)? And is the crested porcupine's C real – how would you check it?</p></div>
+
+<div class="callout log"><div class="co-t">For your logbook</div>
+<ul>
+<li>The counts: reads on each strand, CAC and TAC, the binomial test.</li>
+<li>The three explanations you ruled out – sequencing error, a homozygote, a duplicated gene – and how.</li>
+<li>What this finding does and does not show, and what you would do next.</li>
+</ul></div>
+
+<h2>Going further</h2>
+<ul>
+<li><b>Translate the reads.</b> Take the 27 letters that <code>grep -o</code> printed for a CAC read and for a TAC read, cut them into codons, and translate them by hand with a table of the genetic code. Check that the protein reads PDDS<b>H</b>WTPY and PDDS<b>Y</b>WTPY – as in the human, 202–210.</li>
+<li><b>The crested porcupine.</b> Find the sequencing runs of <i>Hystrix cristata</i> in the ENA card: type the ENA query <code>scientific_name="Hystrix cristata"</code> in the runs form. What kind of runs are they, and how many reads do they have? What would it take to check its C the way you checked the Brazilian porcupine's H?</li>
+</ul>
+<ul class="checklist">
+<li data-check="s10-reads">I looked at the reads, and know what a read pair is.</li>
+<li data-check="s10-codon">I found codon 206 in the reads on both strands, and counted CAC and TAC.</li>
+<li data-check="s10-binom">I showed with a binomial test that the porcupine is heterozygous, not homozygous, and not an error.</li>
+<li data-check="s10-marker">I checked that the two alleles belong to one gene, with the read count and the intron marker.</li>
+<li data-check="s10-log">I wrote this stage up, with what I would do next.</li>
+</ul>
+<div class="stage-nav"><button type="button" data-goto="h-s09"><small>Back</small>← Stage 9 · The mutations in people</button><button class="next" type="button" data-goto="h-s11"><small>Next</small>Stage 11 · Write it up →</button></div>

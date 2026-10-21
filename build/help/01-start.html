@@ -1,0 +1,33 @@
+<!-- id: h-start | title: A first session with the tools | group: Start here | summary: Fifteen minutes: every tab of the workbench once, with the project's data | keys: tour tutorial begin getting started first steps introduction tabs terminal notebook files databases 3d viewer ide ai -->
+<h1><!--ICON:play-->A first session with the tools</h1>
+<p class="lede">Fifteen minutes to see every tab of the workbench once, with the project's own data. Each step has a button that does it for you – but type the commands too.</p>
+
+<h2>1 · The terminal</h2>
+<p>The <b>Terminal</b> tab is a Linux shell (bash) with real bioinformatics programs, running in this page. The project's data are in <code>/data/examples/fnss</code>:</p>
+<pre class="code" data-run="term"><code>ls /data/examples/fnss
+ls /data/examples/fnss/orthologs
+head -3 /data/examples/fnss/sleep/mammal_sleep.tsv</code></pre>
+<p>Type <code>help</code> for the list of programs, and <code>man kalign</code> for one of them. Stage 1 of the guide starts here.</p>
+
+<h2>2 · A notebook</h2>
+<p>The <b>Notebook</b> tab opens with <code>start-here.ipynb</code>, an R notebook. Click into its first grey cell and press <kbd>Shift</kbd>+<kbd>Enter</kbd>: the code runs, its output appears below, and the next cell is selected. R starts in the background; the first run waits for it, a few seconds.</p>
+<div class="tryrow"><button class="do" type="button" data-open-nb="~/notebooks/start-here.ipynb">Open the start-here notebook</button></div>
+
+<h2>3 · Your files</h2>
+<p>Your own files live in your home folder, <code>~</code> (<code>/home/user</code>). The terminal, the notebooks and the <b>Files</b> tab all see the same files: what a command writes, a notebook can read a moment later.</p>
+<pre class="code" data-run="term"><code>mkdir -p ~/first &amp;&amp; cd ~/first
+cut -f 3 /data/examples/fnss/sleep/mammal_sleep.tsv | tail -n +2 | sort | uniq -c | sort -rn &gt; orders.txt
+head orders.txt</code></pre>
+<div class="tryrow"><button class="do" type="button" data-open="~/first/orders.txt">Open orders.txt in Files</button></div>
+
+<h2>4 · The other tabs</h2>
+<ul>
+  <li><b>Databases</b> – UniProt, the PDB, AlphaFold, InterPro, Ensembl, NCBI, ENA, BLAST and Europe PMC, with forms; each search can go into a notebook as code. <button class="do" type="button" data-api="uniprot:Q9C0J9">DEC2 (BHLHE41) in UniProt</button> (<a href="#h-databases">Databases</a>)</li>
+  <li><b>3D viewer</b> – protein structures from the PDB or AlphaFold. <button class="do" type="button" data-cmd="load af P08588">The β1-adrenergic receptor as AlphaFold predicts it</button> – coloured by AlphaFold's confidence: blue where it is sure (the seven helices that cross the cell membrane), orange where it is not (the loose ends). (<a href="#h-viewer">3D viewer</a>)</li>
+  <li><b>IDE</b> – RStudio for R and Spyder for Python, for when a script suits the job better than a notebook. (<a href="#h-ide">The IDE tab</a>)</li>
+  <li><b>AI</b> – a chat and an agent, with a model and a key of your choice. It can be wrong: check what it says, and say in your report if you used it. (<a href="#h-ai">AI assistant</a>)</li>
+</ul>
+
+<h2>5 · Keep your work</h2>
+<p>Everything you make is kept in this browser on this computer. <b>My files</b> (top right) downloads all your files as a <code>.zip</code>; do it once a week. <a href="#h-recipe-keep">Keep your work</a> has the details.</p>
+<div class="stage-nav"><button type="button" data-goto="h-home"><small>Back</small>← Start here</button><button class="next" type="button" data-goto="h-s01"><small>Next</small>Stage 1 · Seven mutations →</button></div>

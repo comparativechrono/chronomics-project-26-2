@@ -1,0 +1,131 @@
+<!-- id: h-s03 | title: Stage 3 · Line them up | group: The project | stage: 3 | tab: yes | tabtitle: Stage 3 – Line them up | summary: Multiple sequence alignment with kalign; your first R notebook; read an alignment into R and find the column of human P384; check the alignment around it | keys: stage 3 multiple sequence alignment kalign afa gap column r notebook webr function readLines grep sub strsplit matrix rbind which table apply paste window identity data frame write.table -->
+<h1>Stage 3 · Line them up</h1>
+<div class="stage-meta"><span class="when">Weeks 3–4</span><span>about 6 hours</span><span class="stage-progress"></span></div>
+<p class="lede">To find "position 384" in 240 species, line their proteins up so that the letters in each column correspond – a multiple sequence alignment. Then meet <b>R</b>, the language you will use for the rest of the project, and use it to read the amino acid of every species at DEC2's P384.</p>
+<div class="skills"><b>You will learn</b><ul>
+<li>what a multiple alignment is, and how to make one with <code>kalign</code></li>
+<li>R in a notebook: objects, vectors, functions, matrices, data frames</li>
+<li>to find the column of a human position in an alignment, and read it in every species</li>
+<li>to check an alignment where it matters, before you trust it</li>
+</ul></div>
+
+<h2>1. Align</h2>
+<p>An <b>alignment</b> writes sequences one above another, adding gaps (<code>-</code>) so that the letters in each column descend from the same letter of the ancestors' sequence. <code>kalign</code> aligns many sequences at once: it first measures how alike each pair is, builds a rough tree from that, and then aligns the most similar sequences first, adding the others one group at a time.</p>
+<pre class="code" data-run="term"><code>cd ~/project
+mkdir -p alignments
+kalign -i /data/examples/fnss/orthologs/BHLHE41_ncbi_mammals.fasta -o alignments/BHLHE41_ncbi.afa</code></pre>
+<p><code>-i</code> is the input, <code>-o</code> the output: an aligned FASTA file (<code>.afa</code>). It takes a few seconds. kalign first prints its name and how to cite it, a warning that it cannot use the fast instructions of your processor (<code>AVX2</code> – it runs in the browser, so this is expected), and then its progress. Look at the result:</p>
+<pre class="code" data-run="term"><code>grep -c "&gt;" alignments/BHLHE41_ncbi.afa
+seqtk seq -l0 alignments/BHLHE41_ncbi.afa | head -6 | cut -c 1-70
+seqtk comp alignments/BHLHE41_ncbi.afa | cut -f 2 | sort | uniq -c</code></pre>
+<p>The sequences now have gaps, and – the point of an alignment – they are all the same length. (<code>seqtk comp</code> counts the gaps in the length.) The Files tab shows an alignment in colour, column by column:</p>
+<pre class="code" data-run="term"><code>open alignments/BHLHE41_ncbi.afa</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>240 sequences, every one <b>820</b> characters long with its gaps – longer than any of the proteins, because each species' insertions open a gap in all the others. The first columns are mostly gaps: a few proteins start earlier than the rest.</p></div>
+<div class="callout think"><div class="co-t">Think</div><p>Scroll through the alignment in the Files tab. Where are the columns that are the same in every species? Where are the gaps? Are the ends of the proteins as well aligned as the middle?</p></div>
+
+<h2>2. Your first R notebook</h2>
+<p>A <b>notebook</b> is a document of <b>cells</b>: cells of code, whose output appears just below them, and cells of text, where you write what you did and what you found. It is a lab notebook that runs. Open the notebook of this stage – it is made the first time you click, in <code>~/notebooks</code>:</p>
+<div class="tryrow"><button class="do" type="button" data-stage-nb="r|stage03-align|Stage 3 – Line them up">Open my stage 3 notebook</button></div>
+<p>Click into a code cell, type, and press <kbd>Shift</kbd>+<kbd>Enter</kbd> to run it. The <b>Add to notebook</b> button of a grey box puts its code into a new cell of the open notebook. R takes a few seconds to start the first time. (<a href="#h-notebook">Notebooks</a> in the help explains the rest.)</p>
+<h3>R in five minutes</h3>
+<p>Run this cell, then change the values and run it again:</p>
+<pre class="code" data-run="r"><code># "pos gets 384": an object called pos holds the number 384
+pos &lt;- 384
+pos + 10
+# text goes in quotes
+aa &lt;- "P"
+# c() combines values into a vector
+lengths &lt;- c(482, 410, 513, 485)
+length(lengths)
+mean(lengths)
+# a test, done on each value: TRUE or FALSE
+lengths &gt; 450
+# TRUE counts as 1
+sum(lengths &gt; 450)
+# [ ] picks values out of a vector by their number, or by a test
+lengths[2]
+lengths[lengths &gt; 450]</code></pre>
+<p>Everything after <code>#</code> is a <b>comment</b>, for people, not for R. <code>length</code>, <code>mean</code> and <code>sum</code> are <b>functions</b>: a name, then what it works on in brackets. To read the manual of a function, run <code>?mean</code>.</p>
+
+<h2>3. Read the alignment into R</h2>
+<p>R has no function to read a FASTA file without extra packages – so write one. A <b>function</b> of your own is made with <code>function( )</code> and given a name; afterwards you use it like any other. This one reads the lines of a file, finds the name lines, keeps the first word of each name, and pastes together the lines of each sequence:</p>
+<pre class="code" data-run="r"><code># read a FASTA file into a named vector: one sequence per species
+read_fasta &lt;- function(path) {
+  x &lt;- readLines(path)
+  h &lt;- grep("^&gt;", x)                        # which lines are name lines
+  ids &lt;- sub("^&gt;(\\S+).*", "\\1", x[h])      # the first word of each name, without the &gt;
+  ends &lt;- c(h[-1] - 1, length(x))            # each sequence ends just before the next name
+  seqs &lt;- mapply(function(a, b) paste(x[(a + 1):b], collapse = ""), h, ends)
+  setNames(toupper(seqs), ids)
+}
+aln &lt;- read_fasta("~/project/alignments/BHLHE41_ncbi.afa")
+length(aln)
+head(nchar(aln))</code></pre>
+<p><code>aln</code> is a vector of 240 sequences, each named by its species: <code>aln["Mus_musculus"]</code> is the mouse's. Now split every sequence into its letters, one per column, and stack them into a <b>matrix</b> – a table with a row for each species and a column for each column of the alignment:</p>
+<pre class="code" data-run="r"><code>m &lt;- do.call(rbind, strsplit(aln, ""))
+dim(m)
+m[1:4, 1:12]</code></pre>
+<p><code>strsplit(aln, "")</code> cuts each sequence into single letters; <code>rbind</code> binds them as rows; <code>dim</code> gives the numbers of rows and columns. <code>m[1:4, 1:12]</code> is rows 1 to 4 and columns 1 to 12 – in R, the row comes before the comma and the column after it, and the rows can be picked by name too: <code>m["Homo_sapiens", 1:12]</code>.</p>
+
+<h2>4. Find the column of P384</h2>
+<p>In the human row, the columns with a letter (not a gap) are, in order, human positions 1, 2, 3 … 482. So the 384th column with a letter in the human row is the column of P384:</p>
+<pre class="code" data-run="r"><code>human_cols &lt;- which(m["Homo_sapiens", ] != "-")
+length(human_cols)
+col384 &lt;- human_cols[384]
+col384
+table(m[, col384])</code></pre>
+<p><code>which</code> gives the numbers of the columns for which the test is TRUE; <code>table</code> counts the values in the column of P384, over all 240 species.</p>
+<div class="callout check"><div class="co-t">Check</div><p><code>human_cols</code> has 482 columns – one for each amino acid of the human protein. In all <b>240</b> species the amino acid in the column of P384 is <b>P</b>.</p></div>
+
+<h2>5. Is the alignment right there?</h2>
+<p>An aligner can be wrong, and so can a prediction of a protein: a species could show "P" in this column only because something else was pushed into it. Look at the 21 columns around P384 (from human position 374 to 394) in a few species – <code>paste(…, collapse = "")</code> glues each row's letters into one string:</p>
+<pre class="code" data-run="r"><code>window &lt;- human_cols[374:394]
+some &lt;- c("Homo_sapiens", "Mus_musculus", "Canis_lupus", "Loxodonta_africana", "Marmota_marmota")
+apply(m[some, window], 1, paste, collapse = "")</code></pre>
+<p>Where a species has a gap in the window (as the mouse does) it lacks an amino acid there. To check every species, measure how many of the 21 positions match the human – the <b>window identity</b>. <code>apply(…, 1, …)</code> applies a function to each row of a matrix; here, a function that compares the row with the human window and takes the mean of TRUE (1) and FALSE (0):</p>
+<pre class="code" data-run="r"><code>human_window &lt;- m["Homo_sapiens", window]
+win_id &lt;- apply(m[, window], 1, function(row) mean(row == human_window))
+summary(win_id)
+sum(win_id &lt; 0.5)</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>The window identity goes from about <b>0.76</b> to 1, with a median of 1: every species matches the human at most of the 21 positions, so the column of P384 is well aligned in all of them. None is below 0.5.</p></div>
+<p>Keep the result as a table – a <b>data frame</b>: named columns, one row per species – and save it as a file:</p>
+<pre class="code" data-run="r"><code>calls &lt;- data.frame(species = rownames(m), residue = m[, col384],
+                    window_identity = round(win_id, 2), row.names = NULL)
+calls$ok &lt;- calls$window_identity &gt;= 0.5 &amp; calls$residue != "-"
+head(calls)
+table(calls$residue, calls$ok)
+write.table(calls, "~/project/results/BHLHE41_P384_ncbi.tsv", sep = "\t", quote = FALSE, row.names = FALSE)</code></pre>
+<p><code>calls$ok</code> is a new column: TRUE where the window identity is at least 0.5 and the species has an amino acid (not a gap) in the column. <code>&amp;</code> means "and".</p>
+<div class="task"><div class="task-t">Your turn</div>
+<ol>
+<li>Read the column of Y362 in the same alignment. Is it the same in all 240 species?</li>
+<li>Which position of the mouse protein is in the column of human P384? (Do as for the human: the columns where the mouse has a letter are mouse positions 1, 2, 3 …; <code>which(mouse_cols == col384)</code> says which of them is <code>col384</code>.) Does it agree with stage 2?</li>
+</ol>
+<details class="hint answer"><summary>Show the answer</summary>
+<pre class="code" data-run="r"><code>table(m[, human_cols[362]])
+mouse_cols &lt;- which(m["Mus_musculus", ] != "-")
+which(mouse_cols == col384)</code></pre>
+<p>Y in all 240. Mouse position <b>325</b> – the same as you found with <code>grep -b</code>, by a completely different route.</p></details></div>
+<p>Write in the notebook's text cells what each step does and what you found, then save it (<kbd>Ctrl</kbd>+<kbd>S</kbd>). The notebook is now part of your record.</p>
+
+<div class="callout log"><div class="co-t">For your logbook</div>
+<ul>
+<li>What an alignment is, and why the aligned sequences are longer than the proteins.</li>
+<li>How you found the column of a human position, in three steps.</li>
+<li>The amino acid of 240 mammals at DEC2 P384 and Y362 – your first result – and the check that the alignment is right there.</li>
+</ul></div>
+
+<h2>Going further</h2>
+<ul>
+<li><b>Another aligner.</b> Align the same file with MUSCLE (<code>muscle -in … -out alignments/BHLHE41_ncbi_muscle.afa</code>) and read the column of P384 in it. Do the two aligners agree?</li>
+<li><b>The whole stretch.</b> Print the 21 columns around P384 for all 240 species, with <code>apply(m[, window], 1, paste, collapse = "")</code>, and count how many distinct stretches there are with <code>table</code>. Which is the commonest?</li>
+</ul>
+<ul class="checklist">
+<li data-check="s3-kalign">I aligned the DEC2 proteins with kalign and looked at the alignment.</li>
+<li data-check="s3-nb">I opened my stage 3 notebook and ran R code in it.</li>
+<li data-check="s3-read">I read the alignment into R with my own function, as a matrix.</li>
+<li data-check="s3-col">I found the column of P384 and counted the amino acids in it.</li>
+<li data-check="s3-window">I checked the alignment around P384 with the window identity, and saved <code>results/BHLHE41_P384_ncbi.tsv</code>.</li>
+<li data-check="s3-log">I wrote this stage up in my logbook and in the notebook's text cells.</li>
+</ul>
+<div class="stage-nav"><button type="button" data-goto="h-s02"><small>Back</small>← Stage 2 · Hundreds of mammals</button><button class="next" type="button" data-goto="h-s04"><small>Next</small>Stage 4 · Conserved or not? →</button></div>

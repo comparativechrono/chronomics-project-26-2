@@ -1,0 +1,64 @@
+<!-- id: h-data | title: The project data | group: The project | stage: 0 | summary: Every file in /data/examples/fnss: what it is, where it came from, what to cite | keys: data files fnss variants orthologs ncbi refseq toga fasta sleep phylogeny of sleep msleep tree upham alphafold gnomad genebass uk biobank alphamissense reads sra porcupine readme sources licence -->
+<h1>The project data</h1>
+<p class="lede">Everything the project needs is in <code>/data/examples/fnss</code>, read-only, next to the guide. These are small pieces of very large public data sets – the parts about seven positions in five proteins – so that they run in your browser. <code>README.md</code> in that folder says the same as this page.</p>
+<div class="tryrow"><button class="do" type="button" data-term-run="ls -R /data/examples/fnss">List the files</button> <button class="do" type="button" data-open="/data/examples/fnss/README.md">Open the README</button></div>
+
+<h2>The mutations and the human proteins</h2>
+<table>
+<tr><th>File</th><th>What it is</th></tr>
+<tr><td><code>variants.tsv</code></td><td>The seven short-sleep mutations, and for comparison NPSR1 N107I, a common variant. One row each: the gene, the human protein (RefSeq accession) whose numbering the mutation uses, the position, the human amino acid and the short sleepers' one, the rsID, the paper (PubMed ID), the people it was found in, the animal model, where in the protein it is and what the paper said about its conservation. A dot means "nothing to say".</td></tr>
+<tr><td><code>human/human_proteins.fasta</code></td><td>The six human proteins whose numbering the mutations use: DEC2 (BHLHE41, NP_110389.1), ADRB1 (NP_000675.1), NPSR1 isoform A (NP_997055.1), GRM1 isoform alpha (mGluR1a, NP_001264993.1), GRM1 isoform beta (mGluR1b, NP_001264994.1; named <code>GRM1b</code>) and SIK3 (NP_001353615.1). All but mGluR1b are the <b>MANE Select</b> proteins, the ones clinical and research databases agree to use.</td></tr>
+</table>
+
+<h2><code>orthologs/</code> – the same proteins in other mammals</h2>
+<p>Two sources, one file per gene and source, one protein per species. Every name line starts with the species, written <code>Genus_species</code> – the same names as in the sleep table and the tree.</p>
+<table>
+<tr><th>Files</th><th>What they are</th></tr>
+<tr><td><code>GENE_ncbi_mammals.fasta</code><br>(BHLHE41, ADRB1, NPSR1, GRM1, GRM1b, SIK3)</td><td>The proteins of NCBI's orthologs of the human gene in mammals (NCBI Gene orthologs and RefSeq annotation, through NCBI Datasets, October 2026). Most genes have several forms (isoforms) in a species; the file has one per species: of those that align well to the human protein around the mutation, the most complete. <code>GRM1b</code> has only isoforms with the mGluR1b tail. Name line: <code>&gt;Genus_species ACCESSION common name</code>. 203–266 species per gene, the human protein first.</td></tr>
+<tr><td><code>GENE_toga_mammals.fasta</code><br>(BHLHE41, ADRB1, NPSR1, GRM1, SIK3)</td><td>The same genes predicted by TOGA (Kirilenko et al. 2023) in genome assemblies of mammals, from TOGA's codon alignments with the human genome (hg38): the protein each species' genome would make, one per species (where TOGA predicted several copies, the one that aligns best). Name line: <code>&gt;Genus_species ASSEMBLY common name</code>. 299–401 species per gene, and the human protein first – that of the transcript TOGA used, which for NPSR1 is isoform G (NP_001287864.1, 390 amino acids, the same as isoform A up to position 340). <code>X</code> stands for a codon TOGA could not read (a gap or a frameshift in the assembly), <code>*</code> for a stop codon.</td></tr>
+</table>
+<div class="callout warn"><div class="co-t">A known fault</div><p>In TOGA's alignment of <i>BHLHE41</i>, the human reference itself goes out of frame at position 432, and so do the predicted proteins of every species from there to the end: the last 50 amino acids of the DEC2 proteins in <code>BHLHE41_toga_mammals.fasta</code> are nonsense. Positions 362 and 384 are not affected. You will see this in stage 4 – it is a good example of why two sources are better than one.</p></div>
+
+<h2><code>sleep/</code> – how long mammals sleep</h2>
+<table>
+<tr><td><code>mammal_sleep.tsv</code></td><td>101 species of mammal with a daily sleep time in one or both of two compilations. <code>species</code>, <code>common_name</code>, <code>order</code> (NCBI taxonomy), <code>environment</code> (land or marine); <code>sleep_pos_h</code>: total sleep in hours per 24 hours from the <b>Phylogeny of Sleep</b> database (McNamara et al. 2008), using only the records that meet the criteria of Capellini et al. (2008) – EEG recordings of at least 12 hours of adult animals on land – and the median of a species' records (<code>pos_records</code>: how many; 66 species); <code>sleep_msleep_h</code>: total sleep from the <b>msleep</b> table of Savage &amp; West (2007), as shipped with the R package ggplot2 (77 species); <code>body_mass_kg</code> (from msleep); <code>genome_species</code>: the species in the sequence files whose proteins stand for this one, and <code>match</code>: <code>species</code> (the same species), <code>genus</code> (a species of the same genus) or <code>none</code>.</td></tr>
+</table>
+
+<h2><code>tree/</code> – the mammal family tree</h2>
+<table>
+<tr><td><code>mammals.nwk</code></td><td>The dated tree of mammals of Upham et al. (2019) – the DNA-only, node-dated maximum clade credibility tree of 4,098 species – cut down to the 485 species of the sequence and sleep files, with the tips named as in them. Newick format; branch lengths in millions of years.</td></tr>
+</table>
+
+<h2><code>structures/</code> – the proteins in 3D</h2>
+<table>
+<tr><td><code>AF-…-F1-model_v6.pdb</code></td><td>The AlphaFold models (AlphaFold DB, version 6) of the five human proteins, by UniProt accession: Q9C0J9 (DEC2), P08588 (ADRB1), Q6W5P4 (NPSR1), Q13255 (GRM1, isoform alpha) and Q9Y2K2 (SIK3). The B-factor column holds AlphaFold's confidence, pLDDT. UniProt's SIK3 (1,321 amino acids) is not the MANE protein (1,369): N783 of the MANE protein is N735 in the model (stage 8).</td></tr>
+</table>
+
+<h2><code>population/</code> – the mutations in people</h2>
+<table>
+<tr><th>File</th><th>What it is</th></tr>
+<tr><td><code>gnomad_fnss_variants.tsv</code></td><td>Each mutation in gnomAD v4.1 (exomes and genomes together, about 807,000 people): allele count (<code>ac</code>), number of alleles looked at (<code>an</code>), frequency (<code>af</code>), homozygotes, and the frequency of carriers.</td></tr>
+<tr><td><code>gnomad_fnss_by_ancestry.tsv</code></td><td>The same, by genetic ancestry group.</td></tr>
+<tr><td><code>gnomad_other_changes_same_codon.tsv</code></td><td>The other changes gnomAD has seen at the same codons, with their counts.</td></tr>
+<tr><td><code>ukb_exomes_fnss_variants.tsv</code></td><td>Each mutation in the exomes of 394,841 people of UK Biobank (Genebass; Karczewski et al. 2022): the number of carriers' alleles (<code>ac</code>) and the difference between carriers and others (<code>beta</code>, with an approximate 95% confidence interval and <code>p</code>) for six sleep questions – sleep duration (hours), chronotype (0–3, higher = more of an evening person), ease of getting up (0–3), insomnia (0–2), daytime napping and daytime dozing (log odds).</td></tr>
+<tr><td><code>ukb_exomes_gene_burden.tsv</code></td><td>Gene-level tests of the same people: do carriers of any rare damaging variant of each gene sleep a different amount?</td></tr>
+<tr><td><code>alphamissense_fnss_sites.tsv</code></td><td>AlphaMissense scores (Cheng et al. 2023) of all 19 possible changes at each of the seven positions: 0 (harmless) to 1 (damaging), with its classes benign, ambiguous and pathogenic. For R889W (mGluR1b) and N783Y (SIK3) the scores are those of the transcripts with that numbering.</td></tr>
+</table>
+
+<h2><code>reads/</code> – one porcupine</h2>
+<table>
+<tr><td><code>coendou_NPSR1_reads.txt</code></td><td>57 read pairs of the whole-genome sequencing of a Brazilian porcupine, <i>Coendou prehensilis</i> (sequencing run SRR10331604 of the DNA Zoo, 463,919,562 read pairs), that contain the 20 letters on one side of <i>NPSR1</i> codon 206 or the other, on either strand. One pair per line: both reads, 151 letters each, joined. Used in stage 10.</td></tr>
+</table>
+
+<h2>To cite</h2>
+<ul>
+  <li><b>NCBI orthologs and RefSeq</b>: O'Leary et al. 2024, <i>Scientific Data</i> 11: 732 (NCBI Datasets); O'Leary et al. 2016, <i>Nucleic Acids Research</i> 44: D733–D745 (RefSeq).</li>
+  <li><b>TOGA</b>: Kirilenko et al. 2023, <i>Science</i> 380: eabn3107. The genome assemblies behind it come from many projects, among them the Zoonomia Consortium, the DNA Zoo and the Vertebrate Genomes Project.</li>
+  <li><b>Sleep</b>: McNamara et al. 2008, <i>The Open Sleep Journal</i> 1: 11–14; Capellini et al. 2008, <i>Evolution</i> 62: 1764–1776; Savage &amp; West 2007, <i>PNAS</i> 104: 1051–1056.</li>
+  <li><b>The tree</b>: Upham, Esselstyn &amp; Jetz 2019, <i>PLoS Biology</i> 17: e3000494.</li>
+  <li><b>AlphaFold</b>: Jumper et al. 2021, <i>Nature</i> 596: 583–589; Varadi et al. 2024, <i>Nucleic Acids Research</i> 52: D368–D375. <b>AlphaMissense</b>: Cheng et al. 2023, <i>Science</i> 381: eadg7492.</li>
+  <li><b>gnomAD v4</b>: Chen et al. 2024, <i>Nature</i> 625: 92–100, and the gnomAD browser (gnomad.broadinstitute.org). <b>Genebass</b>: Karczewski et al. 2022, <i>Cell Genomics</i> 2: 100168. This research used data of UK Biobank, through Genebass.</li>
+  <li><b>The porcupine</b>: the DNA Zoo (dnazoo.org; Dudchenko et al. 2017, <i>Science</i> 356: 92–95), run SRR10331604 of the Sequence Read Archive.</li>
+</ul>
+<p>How the files were made – the scripts, the addresses they were downloaded from and their dates – is in <code>data-build/</code> of the site's repository on GitHub.</p>
+<div class="stage-nav"><button type="button" data-goto="h-home"><small>Back</small>← Start here</button></div>

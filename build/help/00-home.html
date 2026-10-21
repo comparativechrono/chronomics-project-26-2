@@ -1,0 +1,67 @@
+<!-- id: h-home | title: Start here | group: The project | stage: 0 | tab: yes | tabtitle: Start here – the project | summary: The question, the plan, how to use this guide | keys: start project natural short sleep fnss dec2 bhlhe41 adrb1 npsr1 grm1 sik3 mammals overview plan weeks question aims -->
+<h1>Seven mutations, four hundred mammals</h1>
+<div class="stage-meta"><span class="when">Week 1</span><span>about 3 hours</span><span class="stage-progress"></span></div>
+<p class="lede">A research project of the Chronomic Medicine Group. A few families sleep four to six hours a night, all their lives, and feel fine. Their short sleep has been traced to single letters of their DNA – seven mutations in five genes active in the brain. You will look at the same places in the genomes of over four hundred kinds of mammal, and ask what evolution has done with them.</p>
+
+<div class="callout science"><div class="co-t">The question</div>
+<p>Each of the seven mutations changes one amino acid of a protein. The papers that found them say that the amino acid is <b>conserved</b> – the same in the species they looked at, a handful of mammals and a fish or a fly – and take that as a sign that it matters. Mammals, though, sleep anything from two or three hours a day (giraffes, horses, cows) to nearly twenty (armadillos, opossums, some bats). If one changed amino acid can shorten sleep in people, has evolution ever made the same change? Do the mammals that sleep little carry different amino acids at these places from the mammals that sleep a lot?</p>
+<p><b>Your project:</b> use the protein sequences of hundreds of mammals to test whether the seven amino acids really are conserved, find where on the mammal family tree they have changed, test whether those changes go with how long species sleep – and look at the same mutations in hundreds of thousands of people.</p>
+</div>
+
+<p>As far as we know, nobody has done this analysis before. The guide takes you through it in eleven stages, about one a week. Each stage teaches you the tools it needs – you do not need to have programmed before. By the end you will have used a Linux terminal, real bioinformatics programs, R, a 3D viewer of proteins and public databases, and you will have results of your own to write up.</p>
+
+<h2>The plan</h2>
+<ol class="stage-list">
+  <li><button type="button" data-goto="h-science"><span class="n">0</span><span class="t">The science: sleep, short sleepers and evolution</span><span class="w">week 1</span><span class="s">How sleep is controlled, the families who sleep less, and what conservation tells us</span></button></li>
+  <li><button type="button" data-goto="h-s01"><span class="n">1</span><span class="t">Seven mutations</span><span class="w">week 1–2</span><span class="s">The terminal: commands, files and folders; the mutations and the human proteins; find each mutated amino acid</span></button></li>
+  <li><button type="button" data-goto="h-s02"><span class="n">2</span><span class="t">Hundreds of mammals</span><span class="w">week 2–3</span><span class="s">The same proteins in other species, from two sources; who is in the files; why position 384 is not 384 in a mouse</span></button></li>
+  <li><button type="button" data-goto="h-s03"><span class="n">3</span><span class="t">Line them up</span><span class="w">week 3–4</span><span class="s">Multiple alignment with kalign; your first R notebook; DEC2 position 384 in 240 mammals</span></button></li>
+  <li><button type="button" data-goto="h-s04"><span class="n">4</span><span class="t">Conserved or not?</span><span class="w">week 4–5</span><span class="s">All seven positions in both sources; quality checks; which species differ; how unusual each position is</span></button></li>
+  <li><button type="button" data-goto="h-s05"><span class="n">5</span><span class="t">Where the changes happened</span><span class="w">week 5–6</span><span class="s">The dated tree of mammals in R; ancestral states; how many times each amino acid changed</span></button></li>
+  <li><button type="button" data-goto="h-s06"><span class="n">6</span><span class="t">How long mammals sleep</span><span class="w">week 6–7</span><span class="s">Two compilations of sleep times; sleep by order and by body size</span></button></li>
+  <li><button type="button" data-goto="h-s07"><span class="n">7</span><span class="t">Do the amino acids track sleep?</span><span class="w">week 7–8</span><span class="s">t-tests – and why species are not independent: phylogenetic regression</span></button></li>
+  <li><button type="button" data-goto="h-s08"><span class="n">8</span><span class="t">Inside the proteins</span><span class="w">week 8–9</span><span class="s">AlphaFold models in the 3D viewer; how sure the model is; where each amino acid sits</span></button></li>
+  <li><button type="button" data-goto="h-s09"><span class="n">9</span><span class="t">The mutations in people</span><span class="w">week 9–10</span><span class="s">gnomAD, the UK Biobank exomes and AlphaMissense: how rare are the mutations, and do carriers sleep less?</span></button></li>
+  <li><button type="button" data-goto="h-s10"><span class="n">10</span><span class="t">A porcupine with a human mutation</span><span class="w">week 10–11</span><span class="s">The raw reads of one animal: is its short-sleep amino acid real?</span></button></li>
+  <li><button type="button" data-goto="h-s11"><span class="n">11</span><span class="t">Write it up</span><span class="w">week 11–12</span><span class="s">Figures, methods, results and discussion; making the analysis repeatable</span></button></li>
+</ol>
+<p>Stages 1–7 are the core of the project. Stages 8, 9 and 10 each add a separate line of evidence – and stage 10 holds a surprise. Each stage ends with <b>going further</b>: ideas to follow if you have time, or if you want to make the project your own.</p>
+
+<h2>How this page works</h2>
+<ul>
+  <li><b>The guide is on the left; the workbench is on the right.</b> The tabs along the top of the guide are the stages; <b>Help</b> is the manual of the tools. Drag the line between the two halves to make either wider.</li>
+  <li><b>Grey boxes with code</b> have a button: <b>Run in the terminal</b> (terminal commands) or <b>Add to notebook</b> (R code). The buttons save typing, but type the first few commands of each stage yourself – that is how they stick. <button class="do" type="button" data-term="echo 'Hello, DEC2'">Try it: put a command in the terminal</button></li>
+  <li><b>Checklists</b> like the one below have boxes to tick. What you tick is saved in this browser, and the tab of the stage fills in as you go.</li>
+  <li><b>Hints and answers</b> hide behind <i>Show a hint</i>. Try first; looking is fine when you are stuck.</li>
+  <li><b>Search</b> (top of this pane) finds any word in the guide and in the help.</li>
+  <li><b>New words</b> are explained in the <a href="#h-glossary">Glossary</a>; the data are described in <a href="#h-data">The project data</a>, and the papers in <a href="#h-reading">The reading list</a>.</li>
+</ul>
+<div class="callout warn"><div class="co-t"><!--ICON:info-->Your files live in this browser</div>
+<p>Everything you make is kept in this browser on this computer – not on a server. Use the same computer and browser each time, and once a week click <b>My files → Download all my files</b> (top right) to keep a copy. In a private window, or after clearing the browser's data, your files are gone.</p></div>
+
+<h2>Working on your own</h2>
+<ul>
+  <li><b>Keep a logbook.</b> Every research project has one. Yours is a text file, <code>~/project/logbook.md</code>: what you did, what you found, what you did not understand. Bring your questions to your supervisor. <button class="do" type="button" data-logbook="1">Make and open my logbook</button></li>
+  <li><b>One stage a week</b> is about right, with time to read. Some take longer – that is normal.</li>
+  <li><b>When you are stuck:</b> read the error message (it usually says what is wrong); check the hint; search the guide; ask the <b>AI</b> tab (it needs a key of your own – see <a href="#h-ai">The AI assistant</a> – and it can be wrong, so check what it says); write the question in your logbook for your supervisor.</li>
+  <li><b>Check yourself.</b> The green <i>Check</i> boxes say what you should see. If your numbers differ, go back a step – a small slip early on changes everything after it.</li>
+</ul>
+
+<h2>Ground rules</h2>
+<ul>
+  <li>All the data here are <b>public</b>. The animal genomes are open to everyone; the human data are counts and summary results of large studies – nobody's own genome, name or medical record. Never put personal or patient data into this workbench or into an AI tool.</li>
+  <li><b>Cite</b> the data and the programs you use (<a href="#h-data">The project data</a> has the papers). If you use the AI assistant, say so in your report, and how.</li>
+  <li>Your <b>results are yours</b>: the guide shows you how to get them, and the checks tell you when you have; what they mean is for you to think about and discuss.</li>
+</ul>
+
+<h2>Before stage 1</h2>
+<ul class="checklist">
+  <li data-check="s0-read">Read this page.</li>
+  <li data-check="s0-name">Click <b>user</b> at the top of the page and type your first name: the terminal will greet you by it.</li>
+  <li data-check="s0-logbook">Make your logbook (<button class="do" type="button" data-logbook="1">Make and open my logbook</button>) and write today's date and one sentence about what you hope to learn.</li>
+  <li data-check="s0-science">Read <a href="#h-science">The science: sleep, short sleepers and evolution</a>.</li>
+  <li data-check="s0-papers">Read two papers from the <a href="#h-reading">reading list</a> – He et al. 2009 and Ashbrook et al. 2020 are good first ones – and write three questions about them in your logbook.</li>
+  <li data-check="s0-tour">Take <a href="#h-start">a first session with the tools</a> (fifteen minutes, every tab once).</li>
+  <li data-check="s0-download">Download all your files once (<b>My files → Download all my files</b>) to see how it works.</li>
+</ul>
+<div class="stage-nav"><button class="next" type="button" data-goto="h-s01"><small>Next</small>Stage 1 · Seven mutations →</button></div>

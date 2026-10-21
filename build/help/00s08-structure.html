@@ -1,0 +1,88 @@
+<!-- id: h-s08 | title: Stage 8 · Inside the proteins | group: The project | stage: 8 | tab: yes | tabtitle: Stage 8 – Inside the proteins | summary: AlphaFold models of the five proteins in the 3D viewer; pLDDT from the PDB file (fixed columns); where each mutated amino acid sits – helices, loops and disordered tails; numbering of SIK3 in UniProt | keys: stage 8 alphafold structure pdb file plddt b-factor confidence disordered helix transmembrane 3d viewer ngl load af color plddt show sticks label site cut -c fixed width columns awk uniprot numbering sik3 735 curl grep -b mglur1 venus flytrap 3ks9 -->
+<h1>Stage 8 · Inside the proteins</h1>
+<div class="stage-meta"><span class="when">Weeks 8–9</span><span>about 4 hours</span><span class="stage-progress"></span></div>
+<p class="lede">Where are the seven amino acids in the proteins' three-dimensional shapes? In a tightly packed helix, a mutation can change how a protein folds; in a floppy tail, it may change what the protein binds or how it is switched on. AlphaFold's models of the five proteins, and its confidence in each part of them, show which is which.</p>
+<div class="skills"><b>You will learn</b><ul>
+<li>what AlphaFold predicts, and how sure it is (pLDDT)</li>
+<li>the 3D viewer: loading a model, colouring it, showing and labelling residues</li>
+<li>to read a PDB file in the terminal – and why its columns must be cut by position</li>
+<li>that the same amino acid can have different numbers in different databases</li>
+</ul></div>
+
+<h2>1. AlphaFold</h2>
+<p><b>AlphaFold</b> (Jumper et al. 2021) predicts the 3D structure of a protein from its sequence, and the AlphaFold database holds a model of nearly every known protein. With each amino acid it gives its confidence, the <b>pLDDT</b>, from 0 to 100: above 90 the model is usually as good as an experimental structure; 70–90, the backbone is probably right; below 50, AlphaFold has no idea – usually because the region has no fixed shape at all. Such <b>disordered</b> regions are common, and are often where proteins are switched on and off or bind partners.</p>
+<p>Load the β1-adrenergic receptor (ADRB1, UniProt P08588), coloured by pLDDT, with A187 shown and labelled:</p>
+<div class="tryrow"><button class="do" type="button" data-cmd="clear; load af P08588; color plddt; show spheres A:187; label A:187">ADRB1 and A187</button></div>
+<p>The same commands, typed in the viewer's command line (under the picture), do the same: <code>clear; load af P08588; color plddt; show spheres A:187; label A:187</code>. Drag to turn the model, scroll to zoom; <code>center A:187</code> brings A187 to the middle. Dark blue is very confident, light blue confident, yellow low, orange very low.</p>
+<div class="callout check"><div class="co-t">Check</div><p>Seven long blue helices – the seven helices that cross the cell membrane, as in every GPCR – with orange, floppy ends: the start of the protein, outside the cell, and its long tail inside. A187 is in the middle of the fourth helix.</p></div>
+<div class="task"><div class="task-t">Your turn</div>
+<p>Which amino acids touch A187? Type <code>site A:187 5</code> in the viewer: it shows the residues within 5 Å as sticks, with their contacts, and lists them. What kinds of amino acid are they? What might happen if the alanine – the second smallest amino acid – were replaced by a valine, which is bulkier?</p></div>
+
+<h2>2. Read the confidence from the file</h2>
+<p>The project has the five models as files, in <b>PDB</b> format. Look at one:</p>
+<pre class="code" data-run="term"><code>cd ~/project
+ls /data/examples/fnss/structures
+head -4 /data/examples/fnss/structures/AF-P08588-F1-model_v6.pdb
+grep "^ATOM" /data/examples/fnss/structures/AF-P08588-F1-model_v6.pdb | head -3</code></pre>
+<p>Each <code>ATOM</code> line is one atom: its number and name (<code>CA</code> is the central carbon of an amino acid, one per residue), the residue's name and chain, the residue's number, the x, y and z coordinates, and two numbers – the second of which, in an AlphaFold model, is the pLDDT. It looks like a table with spaces between the columns, but it is not: each column has a fixed place in the line. When a coordinate is long, it runs into the next one, and the count of "columns" changes:</p>
+<pre class="code" data-run="term"><code>grep "^ATOM" /data/examples/fnss/structures/AF-Q9Y2K2-F1-model_v6.pdb | grep " CA " | awk '{print NF}' | sort | uniq -c
+grep "^ATOM" /data/examples/fnss/structures/AF-Q9Y2K2-F1-model_v6.pdb | grep " CA " | awk 'NF == 11' | head -2</code></pre>
+<p>(<code>NF</code> is awk's number of fields.) So cut the columns by their position in the line instead: characters 18–20 are the residue's name, 23–26 its number, and 61–66 the pLDDT.</p>
+<pre class="code" data-run="term"><code>grep "^ATOM" /data/examples/fnss/structures/AF-P08588-F1-model_v6.pdb | grep " CA " | cut -c 18-20,23-26,61-66 | head -3
+grep "^ATOM" /data/examples/fnss/structures/AF-P08588-F1-model_v6.pdb | grep " CA " | cut -c 18-20,23-26,61-66 | awk '$2 &gt;= 182 &amp;&amp; $2 &lt;= 192'</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>The SIK3 file has 999 CA lines with 12 fields and 322 with 11: <code>$11</code> would be the pLDDT on some lines and something else on others. Residues 182–192 of ADRB1 all have pLDDT above 95; A187 has <b>97.81</b>.</p></div>
+<p>Now the whole of each protein – the number of residues, the mean pLDDT and the share of residues below 50:</p>
+<pre class="code" data-run="term"><code>for f in /data/examples/fnss/structures/*.pdb
+do
+  echo "$(basename $f) $(grep '^ATOM' $f | grep ' CA ' | cut -c 61-66 | awk '{n++; s += $1; if ($1 &lt; 50) low++} END {printf "%d residues, mean pLDDT %.1f, %.0f%% below 50", n, s/n, 100 * low / n}')"
+done</code></pre>
+<p>And the residue of each mutation – the accession and position of each, written by <code>printf</code> one per line, read by a loop:</p>
+<pre class="code" data-run="term"><code>printf "Q9C0J9\t362\nQ9C0J9\t384\nP08588\t187\nQ6W5P4\t206\nQ13255\t458\n" | while read acc pos
+do
+  grep "^ATOM" /data/examples/fnss/structures/AF-$acc-F1-model_v6.pdb | grep " CA " | cut -c 18-20,23-26,61-66 | awk -v p=$pos -v acc=$acc '$2 == p {print acc, $0}'
+done</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>DEC2 (Q9C0J9): mean pLDDT 55.1, 61% of it below 50; <b>Y362 44.0</b> and <b>P384 42.4</b>. ADRB1: mean 75.3; <b>A187 97.8</b>. NPSR1 (Q6W5P4): mean 81.4; <b>Y206 93.1</b>. GRM1 (Q13255): mean 70.9; <b>S458 94.8</b>. SIK3 (Q9Y2K2): mean 50.7, 67% below 50.</p></div>
+
+<h2>3. Where is SIK3 N783?</h2>
+<p>The SIK3 model has 1,321 residues, but your SIK3 protein – the MANE Select one, NP_001353615.1 – has 1,369. UniProt's main SIK3 is another isoform, and its numbers differ. Find N783 in it by its surroundings, as in stage 2: take the 21 amino acids around N783 (from stage 1's <code>mutation_context.tsv</code>), fetch UniProt's sequence with <code>curl</code>, and search:</p>
+<pre class="code" data-run="term"><code>grep SIK3 results/mutation_context.tsv
+curl -s "https://rest.uniprot.org/uniprotkb/Q9Y2K2.fasta" &gt; results/SIK3_uniprot.fasta
+head -2 results/SIK3_uniprot.fasta
+seqtk seq -l0 results/SIK3_uniprot.fasta | tail -1 | grep -o -b "LRIQPSSPPPNHPNNHLFRQP"</code></pre>
+<p>The stretch starts 724 letters in, so its first letter is position 725, and N – the eleventh – is position <b>735</b>. N783 of the MANE protein is N735 of UniProt's (and of the AlphaFold model).</p>
+<pre class="code" data-run="term"><code>grep "^ATOM" /data/examples/fnss/structures/AF-Q9Y2K2-F1-model_v6.pdb | grep " CA " | cut -c 18-20,23-26,61-66 | awk '$2 == 735'</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>ASN 735, pLDDT <b>35.4</b>: N783 is in a disordered region. (If <code>curl</code> cannot reach UniProt, open Q9Y2K2 in the Databases tab and download its FASTA there.)</p></div>
+
+<h2>4. All seven in 3D</h2>
+<p>Look at each one; for each, write down where it is and how sure AlphaFold is about it.</p>
+<div class="tryrow"><button class="do" type="button" data-cmd="clear; load af Q9C0J9; color plddt; show spheres A:362 or A:384; label A:362 or A:384">DEC2: Y362 and P384</button> <button class="do" type="button" data-cmd="clear; load af Q6W5P4; color plddt; show sticks A:206 or A:107; label A:206 or A:107; center A:206">NPSR1: Y206 (and N107)</button> <button class="do" type="button" data-cmd="clear; load af Q13255; color plddt; show spheres A:458; label A:458; center A:458">GRM1: S458</button> <button class="do" type="button" data-cmd="clear; load af Q9Y2K2; color plddt; show spheres A:735; label A:735">SIK3: N783 (735 here)</button></div>
+<ul>
+<li><b>DEC2</b>: a compact, confident part at the start – the bHLH domain that binds DNA, and the Orange domain – then a long, floppy tail. Y362 and P384 are in the tail.</li>
+<li><b>NPSR1</b>: seven helices in the membrane, like ADRB1. Y206 is in the loop between the fourth and fifth helices, outside the cell (extracellular loop 2) – a loop that, in many receptors for peptides, forms part of the lid of the binding pocket. N107, the common variant, is in the first extracellular loop.</li>
+<li><b>GRM1</b>: a large two-lobed domain outside the cell that closes on glutamate like a Venus flytrap, a domain rich in cysteines, the seven helices, and the long tail of mGluR1a. S458 is in the flytrap, confidently placed.</li>
+<li><b>SIK3</b>: a kinase domain at the start, then most of the protein disordered – including N783.</li>
+<li><b>R889W</b> (mGluR1b) has no model: AlphaFold models only UniProt's main isoform, mGluR1a, whose tail at 889 has another sequence (and pLDDT 36).</li>
+</ul>
+<div class="callout think"><div class="co-t">Think</div><p>Three of the seven mutations (P384R, Y362H, N783Y) are in disordered regions, three (A187V, Y206H, S458A) in confidently folded ones. Does that match what you found in stage 4 – are the folded ones the conserved ones? (Careful: S458 is folded but not conserved.) What could a mutation in a disordered tail do?</p></div>
+
+<div class="callout log"><div class="co-t">For your logbook</div>
+<ul>
+<li>A table: mutation, part of the protein, pLDDT, ordered or disordered.</li>
+<li>Why the PDB file must be cut by position.</li>
+<li>Why N783 is N735 in UniProt – and why you should always say which protein sequence a position belongs to.</li>
+<li>Pictures of the viewer for your report: the viewer's camera button, or <code>export png 2</code>.</li>
+</ul></div>
+
+<h2>Going further</h2>
+<ul>
+<li><b>An experimental structure.</b> The PDB has the flytrap of human mGluR1 with a drug bound in its glutamate pocket (3KS9). <code>clear; load 3KS9; show sticks A:458; label A:458; site Z99 5</code> shows the pocket around the drug, <code>Z99</code>. Is S458 part of it? How far away is it?</li>
+<li><b>Compare with the model.</b> Load both and lay one on the other: <code>clear; load 3KS9; load af Q13255; superpose AF-Q13255-F1:A onto 3KS9:A</code>. How close is the prediction to the experiment in the flytrap?</li>
+</ul>
+<ul class="checklist">
+<li data-check="s8-viewer">I loaded ADRB1 in the 3D viewer, coloured by pLDDT, and found A187.</li>
+<li data-check="s8-pdb">I read the pLDDT of every residue from the PDB files, cutting the columns by position.</li>
+<li data-check="s8-sik3">I found N783 of SIK3 as N735 in UniProt's numbering.</li>
+<li data-check="s8-all">I looked at all seven positions, and wrote down where each is and how sure AlphaFold is.</li>
+<li data-check="s8-log">I saved pictures and wrote this stage up.</li>
+</ul>
+<div class="stage-nav"><button type="button" data-goto="h-s07"><small>Back</small>← Stage 7 · Do the amino acids track sleep?</button><button class="next" type="button" data-goto="h-s09"><small>Next</small>Stage 9 · The mutations in people →</button></div>

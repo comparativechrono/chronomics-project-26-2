@@ -1,0 +1,102 @@
+<!-- id: h-s09 | title: Stage 9 · The mutations in people | group: The project | stage: 9 | tab: yes | tabtitle: Stage 9 – The mutations in people | summary: How common the mutations are in gnomAD (807,000 people), by ancestry; other changes at the same codons; do carriers in the UK Biobank exomes sleep less? A forest plot; AlphaMissense predictions | keys: stage 9 gnomad allele count allele frequency carriers ancestry finnish uk biobank genebass exome association beta confidence interval forest plot segments multiple testing penetrance weedon alphamissense pathogenic benign ambiguous stripchart p384q homozygote -->
+<h1>Stage 9 · The mutations in people</h1>
+<div class="stage-meta"><span class="when">Weeks 9–10</span><span>about 5 hours</span><span class="stage-progress"></span></div>
+<p class="lede">Each mutation was found in a family or two. Hundreds of thousands of people have now had their exomes sequenced. How many of them carry the mutations – and do the carriers sleep less? Two public resources answer that, and a third predicts how damaging each change should be.</p>
+<div class="skills"><b>You will learn</b><ul>
+<li>allele counts and frequencies, and what they say about how rare a mutation is</li>
+<li>to read the results of an association study: an effect, its confidence interval, its P-value</li>
+<li>to draw a forest plot in R</li>
+<li>what a prediction of pathogenicity is – and is not</li>
+</ul></div>
+
+<h2>1. How rare are they?</h2>
+<p><b>gnomAD</b> (the Genome Aggregation Database) collects the exomes and genomes of about 807,000 people and reports how often each variant is seen. Open the notebook of this stage:</p>
+<div class="tryrow"><button class="do" type="button" data-stage-nb="r|stage09-people|Stage 9 – The mutations in people">Open my stage 9 notebook</button></div>
+<pre class="code" data-run="r"><code>gn &lt;- read.delim("/data/examples/fnss/population/gnomad_fnss_variants.tsv")
+gn[, c("variant_id", "rsid", "ac", "an", "af", "hom")]</code></pre>
+<p><code>ac</code> is the <b>allele count</b>, the number of chromosomes carrying the mutation; <code>an</code> the number of chromosomes looked at (two per person); <code>af</code> = <code>ac</code> / <code>an</code>, the <b>allele frequency</b>; <code>hom</code> the number of people with two copies. A rare mutation is almost always carried on one chromosome only, so the share of people who carry it is about twice the allele frequency:</p>
+<pre class="code" data-run="r"><code>gn$carriers_one_in &lt;- round(1 / (2 * gn$af))
+gn[, c("variant_id", "ac", "af", "carriers_one_in")]
+fnss &lt;- gn[gn$variant_id != "NPSR1_N107I", ]
+round(1 / sum(2 * fnss$af))</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>All seven are in gnomAD. The commonest are GRM1 S458A (319 alleles: about <b>1 in 2,500</b> people carries it) and ADRB1 A187V (197: 1 in 4,100), then SIK3 N783Y (1 in 8,300) and DEC2 P384R (1 in 13,400); Y206H and Y362H are very rare (4 alleles and 1). Nobody has two copies. Together, about <b>1 person in 1,150</b> carries one of the seven. N107I, for comparison, has a frequency of 0.45.</p></div>
+<div class="callout think"><div class="co-t">Think</div><p>If every carrier slept two hours less than other people, natural short sleepers with one of these seven mutations alone would be about 1 in 1,150 people – some 60,000 in the UK. Is that plausible? What would you expect if the mutations did not always cause short sleep?</p></div>
+<p>By ancestry – the share of chromosomes, per 10,000, in each group:</p>
+<pre class="code" data-run="r"><code>anc &lt;- read.delim("/data/examples/fnss/population/gnomad_fnss_by_ancestry.tsv")
+s458 &lt;- anc[anc$variant_id == "GRM1_S458A", ]
+s458$per_10000 &lt;- round(10000 * s458$ac / s458$an, 2)
+s458[, c("ancestry_label", "ac", "an", "per_10000")]</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>S458A is found in people of European ancestry, most often in Finland (5 per 10,000 chromosomes, against 2.3 in other Europeans), a little in admixed Americans, and not at all in the African, East Asian or South Asian groups. Do the same for A187V and N783Y: they too are European.</p></div>
+
+<h3>Other changes at the same codons</h3>
+<pre class="code" data-run="r"><code>same &lt;- read.delim("/data/examples/fnss/population/gnomad_other_changes_same_codon.tsv")
+same &lt;- same[same$ac &gt; 0, ]
+same$af &lt;- signif(same$ac / same$an, 3)
+same[, c("reported_variant", "hgvsp", "ac", "af", "hom")]</code></pre>
+<p>A codon can change in more than one way. Look at DEC2 P384: besides P384R, gnomAD has P384L, P384S – and <b>P384Q</b>, glutamine instead of proline, in 990 chromosomes, 1 in 600 people, six of them with two copies.</p>
+<div class="callout think"><div class="co-t">Think</div><p>A different change at the very position of the first short-sleep mutation is carried by one person in 600, some of them homozygous. UniProt notes that in cells P384Q has the opposite effect to P384R (it <i>increases</i> DEC2's repression of CLOCK–BMAL1). What does it tell you that P384 can change to Q in so many healthy people? What would you want to know about them?</p></div>
+
+<h2>2. Do the carriers sleep less?</h2>
+<p><b>UK Biobank</b> asked half a million people, among many other things, "About how many hours sleep do you get in every 24 hours?". <b>Genebass</b> (Karczewski et al. 2022) tested every variant in the exomes of 394,841 of them against thousands of traits, sleep among them. For each mutation: the number of carriers' alleles (<code>ac</code>), the difference in sleep between carriers and everyone else (<code>beta</code>, in hours), its 95% confidence interval and its P-value:</p>
+<pre class="code" data-run="r"><code>ukb &lt;- read.delim("/data/examples/fnss/population/ukb_exomes_fnss_variants.tsv")
+sd &lt;- ukb[ukb$phenotype == "sleep duration", ]
+sd[, c("variant_id", "ac", "beta", "ci95_low", "ci95_high", "p", "note")]</code></pre>
+<p>A <b>forest plot</b> shows each estimate as a dot and its confidence interval as a line. The red band is roughly how much less the short sleepers of the families slept – one to two hours (He et al. 2009: 6.25 hours against 8.06):</p>
+<pre class="code" data-run="r"><code>sd &lt;- sd[!is.na(sd$beta) &amp; sd$variant_id != "NPSR1_N107I", ]
+n &lt;- nrow(sd)
+par(mar = c(4.5, 10, 2, 1))
+plot(sd$beta, n:1, xlim = c(-2.5, 1.5), ylim = c(0.5, n + 0.5), pch = 19, yaxt = "n", ylab = "",
+     xlab = "Difference in sleep, carriers minus others (hours a day)", main = "UK Biobank exomes")
+segments(sd$ci95_low, n:1, sd$ci95_high, n:1)
+axis(2, at = n:1, labels = paste0(sd$variant_id, " (", sd$ac, ")"), las = 1, cex.axis = 0.8)
+abline(v = 0, lty = 2)
+rect(-2, 0, -1, n + 1, col = rgb(1, 0, 0, 0.1), border = NA)</code></pre>
+<p><code>segments</code> draws the lines from <code>ci95_low</code> to <code>ci95_high</code>; <code>axis(2, …)</code> writes the names, with the number of carriers' alleles, on the left; <code>rect</code> draws the band, in a see-through red.</p>
+<div class="callout check"><div class="co-t">Check</div><p>Five can be tested (Y362H and R889W are too rare). None goes with shorter sleep: A187V, 166 carriers' alleles, −0.11 hours (95% CI −0.25 to +0.04); S458A, 173, +0.12 (−0.03 to +0.26); N783Y, 101, −0.01 (−0.20 to +0.18); P384R, 29, +0.27 (−0.09 to +0.62). For the first three the interval rules out a difference of an hour or more. Y206H, with 3, says nothing either way (−1.0 to +1.2).</p></div>
+<div class="task"><div class="task-t">Your turn</div>
+<p>The table has five other sleep questions: chronotype, ease of getting up, insomnia, napping and dozing in the day. Look at all the results with a P-value below 0.05: <code>ukb[!is.na(ukb$p) &amp; ukb$p &lt; 0.05, ]</code>. How many tests are there in all for the seven mutations? How many would you expect to have P &lt; 0.05 by chance alone?</p>
+<details class="hint answer"><summary>Show the answer</summary>
+<p>One: SIK3 N783Y and insomnia, P = 0.04 – carriers report slightly <i>less</i> insomnia. There are 30 tests of the seven mutations (five mutations × six questions); by chance alone about 30 × 0.05 = 1.5 would have P &lt; 0.05. One is what chance would give.</p></details></div>
+<div class="callout think"><div class="co-t">Think</div><p>Before you conclude "the mutations do nothing", list what could explain the difference between the families and UK Biobank. The sleep question is answered in whole hours, by people aged 40 to 70. The families were found because they slept little – perhaps other genes in them help. Mice with the mutations slept less, but a mouse is not a person. And a mutation that shortens sleep in some carriers but not most (low <b>penetrance</b>) would look like this. Weedon et al. (2022) came to the same point with fewer people: compare their conclusion with yours.</p></div>
+
+<h2>3. How damaging should they be?</h2>
+<p><b>AlphaMissense</b> (Cheng et al. 2023) predicts, for every possible amino-acid change in every human protein, a score from 0 (harmless) to 1 (damaging), from the protein's structure and from how variable the position is across species. It calls scores above 0.564 likely pathogenic, below 0.34 likely benign, and those between ambiguous. The table has all 19 possible changes at each of the seven positions:</p>
+<pre class="code" data-run="r"><code>am &lt;- read.delim("/data/examples/fnss/population/alphamissense_fnss_sites.tsv")
+am[am$is_fnss_mutation == 1, c("variant", "substitution", "am_score", "am_class")]
+table(am$variant, am$am_class)
+for (v in unique(am$variant)) {
+  a &lt;- am[am$variant == v, ]
+  cat(v, ": the short-sleep change ranks", rank(-a$am_score)[a$is_fnss_mutation == 1], "of", nrow(a), "\n")
+}</code></pre>
+<p><code>rank(-a$am_score)</code> ranks the 19 changes from the most damaging (1) to the least (19).</p>
+<pre class="code" data-run="r"><code>v &lt;- unique(am$variant)
+par(mar = c(4.5, 10, 2, 1))
+stripchart(am_score ~ factor(variant, levels = rev(v)), data = am, pch = 19, col = "grey60", las = 1,
+           xlim = c(0, 1), xlab = "AlphaMissense score")
+f &lt;- am[am$is_fnss_mutation == 1, ]
+points(f$am_score, match(f$variant, rev(v)), pch = 19, col = "red", cex = 1.4)
+abline(v = c(0.34, 0.564), lty = 3)</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>Only Y362H is predicted pathogenic (0.73). P384R (0.41) and Y206H (0.46) are ambiguous; A187V (0.32), N783Y (0.23), R889W (0.14) and S458A (0.11) benign. S458A ranks 18th of the 19 possible changes at its position: one of the most harmless changes there could be. At ADRB1 187, NPSR1 206 and DEC2 362, most other changes are predicted pathogenic.</p></div>
+<div class="callout think"><div class="co-t">Think</div><p>AlphaMissense learned in part from how variable each position is across species – the question of stage 4. Is it surprising, then, that it calls S458A benign? Can its score be used as independent evidence alongside your stage 4 results?</p></div>
+
+<div class="callout log"><div class="co-t">For your logbook</div>
+<ul>
+<li>A table: each mutation, its frequency in gnomAD, the number of carriers in UK Biobank, the difference in sleep with its interval, and the AlphaMissense score.</li>
+<li>Your forest plot, with a caption.</li>
+<li>What could explain the difference between the families and UK Biobank – and which explanation you find most likely.</li>
+</ul></div>
+
+<h2>Going further</h2>
+<ul>
+<li><b>Whole genes.</b> <code>ukb_exomes_gene_burden.tsv</code> tests every rare damaging variant of each gene together. Does any of the five genes go with sleep duration? (Two P-values, both for GRM1, are just under 0.05 – how many tests are in the table?)</li>
+<li><b>See it yourself.</b> Look up rs776439595 (ADRB1 A187V) in the Ensembl card of the Databases tab (Variant Effect Predictor): <button class="do" type="button" data-api="ensembl:vep:rs776439595">rs776439595 in Ensembl VEP</button>. What does it predict, and from which transcripts?</li>
+</ul>
+<ul class="checklist">
+<li data-check="s9-gnomad">I worked out how rare each mutation is, and in which populations.</li>
+<li data-check="s9-codon">I looked at other changes at the same codons, and thought about P384Q.</li>
+<li data-check="s9-ukb">I drew a forest plot of sleep duration in UK Biobank carriers.</li>
+<li data-check="s9-multiple">I counted the tests, and know how many P &lt; 0.05 to expect by chance.</li>
+<li data-check="s9-am">I compared the AlphaMissense scores of the seven changes with the other possible changes.</li>
+<li data-check="s9-log">I wrote this stage up, with the reasons the families and UK Biobank might differ.</li>
+</ul>
+<div class="stage-nav"><button type="button" data-goto="h-s08"><small>Back</small>← Stage 8 · Inside the proteins</button><button class="next" type="button" data-goto="h-s10"><small>Next</small>Stage 10 · A porcupine with a human mutation →</button></div>

@@ -1,0 +1,73 @@
+variant_id	ancestry	ancestry_label	ac	an	hom	af
+BHLHE41_P384R	afr	African/African American	0	61510	0	0
+BHLHE41_P384R	amr	Admixed American	0	22384	0	0
+BHLHE41_P384R	asj	Ashkenazi Jewish	0	15250	0	0
+BHLHE41_P384R	eas	East Asian	0	26068	0	0
+BHLHE41_P384R	fin	Finnish	2	29972	0	6.67e-05
+BHLHE41_P384R	mid	Middle Eastern	0	3072	0	0
+BHLHE41_P384R	nfe	Non-Finnish European	38	954282	0	3.98e-05
+BHLHE41_P384R	remaining	Remaining	3	41344	0	7.26e-05
+BHLHE41_P384R	sas	South Asian	1	25710	0	3.89e-05
+BHLHE41_Y362H	afr	African/African American	1	65368	0	1.53e-05
+BHLHE41_Y362H	amr	Admixed American	0	37238	0	0
+BHLHE41_Y362H	asj	Ashkenazi Jewish	0	22292	0	0
+BHLHE41_Y362H	eas	East Asian	0	30338	0	0
+BHLHE41_Y362H	fin	Finnish	0	40236	0	0
+BHLHE41_Y362H	mid	Middle Eastern	0	4158	0	0
+BHLHE41_Y362H	nfe	Non-Finnish European	0	1040602	0	0
+BHLHE41_Y362H	remaining	Remaining	0	48976	0	0
+BHLHE41_Y362H	sas	South Asian	0	60066	0	0
+ADRB1_A187V	afr	African/African American	0	74928	0	0
+ADRB1_A187V	amr	Admixed American	0	59980	0	0
+ADRB1_A187V	asj	Ashkenazi Jewish	0	29560	0	0
+ADRB1_A187V	eas	East Asian	0	44866	0	0
+ADRB1_A187V	fin	Finnish	0	62750	0	0
+ADRB1_A187V	mid	Middle Eastern	0	6082	0	0
+ADRB1_A187V	nfe	Non-Finnish European	192	1179836	0	0.000163
+ADRB1_A187V	remaining	Remaining	5	62466	0	8e-05
+ADRB1_A187V	sas	South Asian	0	91054	0	0
+NPSR1_Y206H	afr	African/African American	0	33402	0	0
+NPSR1_Y206H	amr	Admixed American	0	44664	0	0
+NPSR1_Y206H	asj	Ashkenazi Jewish	0	26072	0	0
+NPSR1_Y206H	eas	East Asian	0	39534	0	0
+NPSR1_Y206H	fin	Finnish	0	53204	0	0
+NPSR1_Y206H	mid	Middle Eastern	0	5754	0	0
+NPSR1_Y206H	nfe	Non-Finnish European	3	1110906	0	2.7e-06
+NPSR1_Y206H	remaining	Remaining	1	60276	0	1.66e-05
+NPSR1_Y206H	sas	South Asian	0	86242	0	0
+GRM1_S458A	afr	African/African American	0	74926	0	0
+GRM1_S458A	amr	Admixed American	7	60000	0	0.000117
+GRM1_S458A	asj	Ashkenazi Jewish	0	29592	0	0
+GRM1_S458A	eas	East Asian	0	44892	0	0
+GRM1_S458A	fin	Finnish	32	64036	0	0.0005
+GRM1_S458A	mid	Middle Eastern	0	6080	0	0
+GRM1_S458A	nfe	Non-Finnish European	269	1179304	0	0.000228
+GRM1_S458A	remaining	Remaining	11	62458	0	0.000176
+GRM1_S458A	sas	South Asian	0	91070	0	0
+GRM1_R889W	afr	African/African American	0	74868	0	0
+GRM1_R889W	amr	Admixed American	0	59844	0	0
+GRM1_R889W	asj	Ashkenazi Jewish	0	29556	0	0
+GRM1_R889W	eas	East Asian	0	44850	0	0
+GRM1_R889W	fin	Finnish	0	63960	0	0
+GRM1_R889W	mid	Middle Eastern	0	6084	0	0
+GRM1_R889W	nfe	Non-Finnish European	19	1179250	0	1.61e-05
+GRM1_R889W	remaining	Remaining	0	62426	0	0
+GRM1_R889W	sas	South Asian	0	90482	0	0
+SIK3_N783Y	afr	African/African American	0	73122	0	0
+SIK3_N783Y	amr	Admixed American	0	54526	0	0
+SIK3_N783Y	asj	Ashkenazi Jewish	0	29060	0	0
+SIK3_N783Y	eas	East Asian	0	44012	0	0
+SIK3_N783Y	fin	Finnish	0	63728	0	0
+SIK3_N783Y	mid	Middle Eastern	0	5990	0	0
+SIK3_N783Y	nfe	Non-Finnish European	94	1174220	0	8.01e-05
+SIK3_N783Y	remaining	Remaining	2	61754	0	3.24e-05
+SIK3_N783Y	sas	South Asian	0	88480	0	0
+NPSR1_N107I	afr	African/African American	40532	74752	10956	0.542
+NPSR1_N107I	amr	Admixed American	21226	59770	3909	0.355
+NPSR1_N107I	asj	Ashkenazi Jewish	12689	29540	2747	0.43
+NPSR1_N107I	eas	East Asian	23794	44746	6353	0.532
+NPSR1_N107I	fin	Finnish	30367	63908	7214	0.475
+NPSR1_N107I	mid	Middle Eastern	2603	6046	565	0.431
+NPSR1_N107I	nfe	Non-Finnish European	534192	1176434	121898	0.454
+NPSR1_N107I	remaining	Remaining	27775	62320	6210	0.446
+NPSR1_N107I	sas	South Asian	30125	90870	5261	0.332

@@ -1,0 +1,104 @@
+<!-- id: h-s02 | title: Stage 2 · Hundreds of mammals | group: The project | stage: 2 | tab: yes | tabtitle: Stage 2 – Hundreds of mammals | summary: Orthologs from two sources, NCBI and TOGA; what is in the files; comparing lists with comm; protein lengths; why position 384 is not 384 in a mouse | keys: stage 2 orthologs ncbi refseq toga assembly fasta grep -c grep -i cut -d sort comm species list seqtk comp length for loop basename awk substr grep -o grep -b motif mouse dog numbering alignment -->
+<h1>Stage 2 · Hundreds of mammals</h1>
+<div class="stage-meta"><span class="when">Weeks 2–3</span><span>about 5 hours</span><span class="stage-progress"></span></div>
+<p class="lede">Every mammal has the five genes of the short-sleep mutations: the same gene in different species is called an <b>ortholog</b>. In this stage you meet their proteins, from two independent sources, and find out what the files hold – which species, how long the proteins are, and why the numbers of the human protein do not work for a mouse.</p>
+<div class="skills"><b>You will learn</b><ul>
+<li>where the sequences come from: NCBI's annotation of genomes, and TOGA</li>
+<li>to list and count what is in a FASTA file, and to search it – and the traps of searching</li>
+<li>to compare two lists with <code>comm</code></li>
+<li>a <code>for</code> loop over files, and <code>sort</code> by numbers</li>
+<li>why different species need to be <b>aligned</b> before they can be compared</li>
+</ul></div>
+
+<h2>1. Two sources, eleven files</h2>
+<pre class="code" data-run="term"><code>cd ~/project
+ls /data/examples/fnss/orthologs
+head -4 /data/examples/fnss/orthologs/BHLHE41_ncbi_mammals.fasta</code></pre>
+<p>There are two files for each gene. The <code>ncbi</code> files come from NCBI, which annotates newly sequenced genomes – predicts their genes and proteins from RNA and from known proteins – in its <b>RefSeq</b> collection, and works out which genes of different species are orthologs. The <code>toga</code> files come from <b>TOGA</b> (Kirilenko et al. 2023), which aligns the genome of each species to the human genome and carries each human gene across, reading off the protein that the other genome would make. (<code>GRM1b</code> – mGluR1b – has only an NCBI file: TOGA predicts one form of each gene.)</p>
+<p>Each name line starts with the species, written <code>Genus_species</code>, then the accession of the protein (NCBI) or the name of the genome assembly (TOGA), then the species' common name. The human protein is first in every file.</p>
+<pre class="code" data-run="term"><code>grep -c "&gt;" /data/examples/fnss/orthologs/*.fasta</code></pre>
+<p><code>*</code> stands for "anything": <code>*.fasta</code> is every file whose name ends in <code>.fasta</code>. With several files, <code>grep -c</code> gives a count for each.</p>
+<div class="callout check"><div class="co-t">Check</div><p>NCBI: BHLHE41 <b>240</b> sequences, ADRB1 261, NPSR1 254, GRM1 256, GRM1b 203, SIK3 266. TOGA: BHLHE41 <b>300</b>, ADRB1 339, NPSR1 370, GRM1 394, SIK3 402. One sequence per species, the human one included.</p></div>
+
+<h2>2. Who is in them?</h2>
+<pre class="code" data-run="term"><code>grep "&gt;" /data/examples/fnss/orthologs/BHLHE41_ncbi_mammals.fasta | head
+grep -i "elephant" /data/examples/fnss/orthologs/BHLHE41_ncbi_mammals.fasta
+grep "&gt;Mus_musculus " /data/examples/fnss/orthologs/*_ncbi_mammals.fasta</code></pre>
+<p><code>grep -i</code> ignores the difference between capitals and small letters. Look at what "elephant" finds: an elephant, but also an elephant shrew and two elephant seals. <code>grep</code> finds letters, not meaning – always look at what it found before you count it.</p>
+<div class="task"><div class="task-t">Your turn</div>
+<p>Is the giraffe in the DEC2 files? The platypus? The naked mole-rat? Look in both sources. (<code>grep -i "giraffe\|platypus"</code> looks for either: <code>\|</code> means "or".)</p>
+<details class="hint answer"><summary>Show the answer</summary>
+<pre class="code" data-run="term"><code>grep -i "giraffe\|platypus\|mole-rat" /data/examples/fnss/orthologs/BHLHE41_ncbi_mammals.fasta
+grep -i "giraffe\|platypus\|mole-rat" /data/examples/fnss/orthologs/BHLHE41_toga_mammals.fasta</code></pre>
+<p>The naked mole-rat is in both. The giraffe (two species of it) is only in TOGA's file. The platypus is in neither DEC2 file (it is in other genes' files: try <code>grep -c Ornithorhynchus</code> on them). Each source misses species, and not the same ones.</p></details></div>
+
+<h3>Compare the two lists</h3>
+<p>Which species are in both sources, and which in one only? Make a sorted list of the species of each file: <code>cut -d " " -f 1</code> keeps the first word of each name line (<code>-d " "</code>: the columns are separated by spaces), and <code>cut -c 2-</code> removes the <code>&gt;</code>.</p>
+<pre class="code" data-run="term"><code>grep "&gt;" /data/examples/fnss/orthologs/BHLHE41_ncbi_mammals.fasta | cut -d " " -f 1 | cut -c 2- | sort &gt; results/BHLHE41_ncbi_species.txt
+grep "&gt;" /data/examples/fnss/orthologs/BHLHE41_toga_mammals.fasta | cut -d " " -f 1 | cut -c 2- | sort &gt; results/BHLHE41_toga_species.txt
+wc -l results/BHLHE41_*_species.txt</code></pre>
+<p><code>comm</code> compares two sorted lists. It prints three columns – lines only in the first file, lines only in the second, lines in both – and <code>-1</code>, <code>-2</code>, <code>-3</code> hide them:</p>
+<pre class="code" data-run="term"><code>comm -12 results/BHLHE41_ncbi_species.txt results/BHLHE41_toga_species.txt | wc -l
+comm -23 results/BHLHE41_ncbi_species.txt results/BHLHE41_toga_species.txt | wc -l
+comm -13 results/BHLHE41_ncbi_species.txt results/BHLHE41_toga_species.txt | wc -l</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p><b>135</b> species are in both, <b>105</b> only in NCBI's file and <b>165</b> only in TOGA's – 405 species in all, the human included.</p></div>
+<div class="task"><div class="task-t">Your turn</div>
+<p>Look at the first species found only in NCBI's file, and only in TOGA's (<code>comm -23 … | head</code>). Then look at the assemblies in TOGA's file: <code>grep "&gt;" …toga… | cut -d " " -f 2 | cut -c 1-2 | sort | uniq -c</code>. Most names start with <code>HL</code> – the genomes assembled by the Hiller lab, which made TOGA, from the reads of many projects; the others are the names of the UCSC Genome Browser. Why might a species be in one source and not the other?</p>
+<details class="hint answer"><summary>Show the answer</summary>
+<p>NCBI only annotates some genomes, and a species is in its file only if NCBI's annotation found a good DEC2 protein in it; TOGA only used some assemblies – those of placental mammals, which is why all the marsupials of NCBI's file, from the koala to the Tasmanian devil, are missing from TOGA's – and only kept the predictions it was sure of. The two sources were built differently, from partly different genomes – which is what makes them useful checks on each other.</p></details></div>
+
+<h2>3. How long are the proteins?</h2>
+<p><code>seqtk comp</code> writes a line for each sequence: its name, its length, and then counts of A, C, G and T, which mean nothing for a protein – keep the first two columns. <code>sort -n</code> sorts by number, and <code>sort -k2,2n</code> by the number in the second column:</p>
+<pre class="code" data-run="term"><code>seqtk comp /data/examples/fnss/orthologs/BHLHE41_ncbi_mammals.fasta | head -3 | cut -f 1,2
+seqtk comp /data/examples/fnss/orthologs/BHLHE41_ncbi_mammals.fasta | cut -f 2 | sort -n | uniq -c | sort -rn | head -5
+seqtk comp /data/examples/fnss/orthologs/BHLHE41_ncbi_mammals.fasta | sort -k2,2n | head -3 | cut -f 1,2
+seqtk comp /data/examples/fnss/orthologs/BHLHE41_ncbi_mammals.fasta | sort -k2,2n | tail -3 | cut -f 1,2</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>The commonest length is 482 – the human one – in <b>30</b> species, then 484 (21) and 483 (12). The shortest is the Alpine marmot's, <b>292</b>; the longest, <b>597</b>, belong to three hoofed mammals (a buffalo, the white-tailed deer and the bighorn sheep).</p></div>
+<p>Now all eleven files at once, with a <code>for</code> loop: <code>$f</code> takes the name of each file in turn, and <code>basename</code> removes the folders from it:</p>
+<pre class="code" data-run="term"><code>for f in /data/examples/fnss/orthologs/*.fasta
+do
+  echo "$(basename $f) $(grep -c '&gt;' $f) $(seqtk comp $f | cut -f 2 | sort -n | uniq -c | sort -rn | head -1)"
+done</code></pre>
+<p>Each line: the file, its number of sequences, and its commonest length with how many species have it.</p>
+<div class="callout think"><div class="co-t">Think</div><p>Why do the proteins of one gene differ in length? Some differences are real – an insertion or deletion in the gene of one group of species. Some come from the annotation: a species may make several forms of a protein, and a prediction may miss an exon or add one. (Unadkat &amp; Whittall 2020 found a gorilla DEC2 with 106 extra amino acids at one end and 65 missing at the other, and suggested it was an annotation error.) And some come from the genome itself: a gap in an assembly, or a misread letter that breaks the reading frame. TOGA writes <code>X</code> for a codon it could not read. Note too that TOGA's human NPSR1 is 390 amino acids, not 371: TOGA used another isoform, the same as yours up to position 340.</p></div>
+
+<h2>4. Position 384 is not 384</h2>
+<p>Turn the DEC2 file into a table, as in stage 1, and print, for seven species, the amino acid at position 384, the 21 around it, and the length of the protein. Here <code>awk</code>'s <code>substr($2, 374, 21)</code> takes 21 letters of the sequence from position 374, and <code>-v sp=$sp</code> hands the species' name to awk:</p>
+<pre class="code" data-run="term"><code>seqtk seq -l0 /data/examples/fnss/orthologs/BHLHE41_ncbi_mammals.fasta | paste - - &gt; results/BHLHE41_ncbi.tsv
+for sp in Homo_sapiens Pan_troglodytes Mus_musculus Rattus_norvegicus Canis_lupus Bos_taurus Loxodonta_africana
+do
+  grep "^&gt;$sp " results/BHLHE41_ncbi.tsv | awk -F'\t' -v sp=$sp '{print sp, substr($2, 384, 1), substr($2, 374, 21), length($2)}'
+done</code></pre>
+<p>The chimpanzee has P at 384, in the same stretch as the human. But the mouse and the rat have H, in a stretch that looks nothing like it; the dog has Y – in the stretch around human Y362; the cow has A. Is DEC2's proline missing from these species? Search for the stretch itself instead of a position: <code>grep -o</code> prints only the part of the line that matched, and <code>-b</code> adds where in the line it starts, counting from 0:</p>
+<pre class="code" data-run="term"><code>grep "^&gt;Homo_sapiens " results/BHLHE41_ncbi.tsv | cut -f 2 | grep -o -b "PFPLLYPG"
+grep "^&gt;Mus_musculus " results/BHLHE41_ncbi.tsv | cut -f 2 | grep -o -b "PFPLLYPG"
+cut -f 2 results/BHLHE41_ncbi.tsv | grep -c "PFPLLYPG"</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>The human <code>PFPLLYPG</code> starts 383 letters in – at position 384, which is P384. The mouse has the same stretch 324 letters in: the mouse's proline that matches human P384 is its <b>P325</b>. The stretch is found, letter for letter, in <b>229</b> of the 240 proteins.</p></div>
+<div class="task"><div class="task-t">Your turn</div>
+<p>Which 11 species do not have <code>PFPLLYPG</code>? (<code>grep -v</code> keeps the lines that do <i>not</i> match.) What do most of them have in common?</p>
+<details class="hint answer"><summary>Show the answer</summary>
+<pre class="code" data-run="term"><code>grep -v "PFPLLYPG" results/BHLHE41_ncbi.tsv | cut -f 1 | cut -d " " -f 1,3-</code></pre>
+<p>Ten of the eleven are marsupials – the koala, wallaby, Tasmanian devil, opossums and others – whose last common ancestor with us lived about 160 million years ago; their DEC2 has a slightly different stretch here. Searching for an exact stretch misses them: what is needed is a method that lines up similar, not only identical, sequences.</p></details></div>
+<p>Numbers belong to one sequence. The mouse protein is shorter (410 amino acids) – it lacks a stretch before this point – so everything after the gap is numbered differently. To find "position 384" in 400 species you need to line the sequences up, letter against matching letter, allowing for gaps: a <b>multiple sequence alignment</b>. That is stage 3.</p>
+
+<div class="callout log"><div class="co-t">For your logbook</div>
+<ul>
+<li>What an ortholog is, and how NCBI and TOGA find them – in your own words.</li>
+<li>The numbers of species in each file, and how many are in both sources for DEC2.</li>
+<li>Why the proteins differ in length, and why position 384 of the human protein is position 325 in the mouse.</li>
+</ul></div>
+
+<h2>Going further</h2>
+<ul>
+<li>Do the comparison of the two sources (<code>comm</code>) for the other four genes. Is the overlap similar? Write a <code>for</code> loop over the gene names: <code>for g in BHLHE41 ADRB1 NPSR1 GRM1 SIK3; do … ${g}_ncbi_mammals.fasta …; done</code>.</li>
+<li>Which species is in all eleven files? (Hint: make the eleven species lists, then <code>cat</code> them, <code>sort</code>, <code>uniq -c</code>, and keep the lines with 11.)</li>
+</ul>
+<ul class="checklist">
+<li data-check="s2-files">I know what the two sources are, and counted the sequences of each file.</li>
+<li data-check="s2-grep">I searched the files for species, and saw what <code>grep</code> finds that I did not mean.</li>
+<li data-check="s2-comm">I compared the species of the two DEC2 files with <code>comm</code>.</li>
+<li data-check="s2-lengths">I looked at the lengths of the proteins, and wrote down why they differ.</li>
+<li data-check="s2-384">I found that position 384 is not 384 in a mouse, and why an alignment is needed.</li>
+<li data-check="s2-log">I wrote this stage up in my logbook.</li>
+</ul>
+<div class="stage-nav"><button type="button" data-goto="h-s01"><small>Back</small>← Stage 1 · Seven mutations</button><button class="next" type="button" data-goto="h-s03"><small>Next</small>Stage 3 · Line them up →</button></div>

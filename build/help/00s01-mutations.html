@@ -1,0 +1,141 @@
+<!-- id: h-s01 | title: Stage 1 · Seven mutations | group: The project | stage: 1 | tab: yes | tabtitle: Stage 1 – Seven mutations | summary: Commands, files and folders; the table of mutations; proteins in FASTA files; find each mutated amino acid, in a loop; UniProt and Europe PMC | keys: stage 1 terminal shell bash commands pwd ls cd mkdir path folder tsv cut head tail wc sort uniq grep fasta seqtk paste awk loop while read variable uniprot europe pmc dec2 bhlhe41 p384r isoform grm1b -->
+<h1>Stage 1 · Seven mutations</h1>
+<div class="stage-meta"><span class="when">Weeks 1–2</span><span>about 5 hours</span><span class="stage-progress"></span></div>
+<p class="lede">Before you compare hundreds of species, get to know the seven mutations and the human proteins they change. In this stage you learn to give the computer instructions by typing them, and use them to find each mutated amino acid yourself – and to check that the papers' numbers are right.</p>
+<div class="skills"><b>You will learn</b><ul>
+<li>the terminal: commands, options and arguments; files, folders and paths</li>
+<li>to look into files without opening them: <code>head</code>, <code>cut</code>, <code>grep</code>, <code>wc</code>, <code>sort</code>, <code>uniq</code> – and to join them with pipes, <code>|</code></li>
+<li>tables in text files, and proteins in FASTA files</li>
+<li>a loop: the same commands for every line of a table</li>
+<li>to look up a protein in UniProt and a paper in Europe PMC</li>
+</ul></div>
+
+<h2>1. Your first commands</h2>
+<p>The <b>Terminal</b> tab on the right is a Linux terminal, the way most bioinformatics is done. The line that ends in <code>$</code> is the <b>prompt</b>: the computer is waiting for a command. Type one and press <kbd>Enter</kbd>. Type these four yourself – one at a time – rather than using the button:</p>
+<pre class="code" data-run="term"><code>pwd
+ls /data/examples/fnss
+ls -l /data/examples/fnss/orthologs
+ls -lh /data/examples/fnss/orthologs</code></pre>
+<ul>
+<li><code>pwd</code> – <i>print working directory</i>: the folder you are in. It is your <b>home</b> folder, <code>/home/user</code>, which can also be written <code>~</code>.</li>
+<li><code>ls</code> – <i>list</i> the files in a folder. <code>/data/examples/fnss</code> is the folder of the project's data (you can read it but not change it).</li>
+<li><code>-l</code> is an <b>option</b>: it makes <code>ls</code> show a long list, with the size and date of each file. <code>-lh</code> shows the sizes in human units (K, M). Options change what a command does; <b>arguments</b> (here the folder) tell it what to work on.</li>
+</ul>
+<p>Three things save a lot of typing: <kbd>Tab</kbd> completes the name of a file or a command (type <code>ls /data/ex</code> and press <kbd>Tab</kbd>); <kbd>↑</kbd> brings back the commands you typed before; and <code>man ls</code> (or <code>ls --help</code>) explains a command and all its options. <code>help</code> lists the programs of this terminal.</p>
+
+<h3>Your project folder</h3>
+<p>Keep everything you make in one place. Make a folder, <code>project</code>, with three folders in it – for results, figures and scripts – and go into it:</p>
+<pre class="code" data-run="term"><code>mkdir -p ~/project/results ~/project/figures ~/project/scripts
+cd ~/project
+ls
+pwd</code></pre>
+<p><code>mkdir</code> makes folders (<code>-p</code>: with any folders above them, and no complaint if they exist already); <code>cd</code> – <i>change directory</i> – moves you into one. A <b>path</b> says where a file is: <code>/data/examples/fnss/human</code> starts at the top of the file system (an <b>absolute</b> path); <code>results/human_proteins.tsv</code> starts from where you are (a <b>relative</b> path); <code>~</code> is your home; <code>..</code> is the folder above.</p>
+<div class="callout check"><div class="co-t">Check</div><p><code>pwd</code> prints <code>/home/user/project</code>, and <code>ls</code> shows <code>figures</code>, <code>results</code> and <code>scripts</code>. The <b>Files</b> tab shows the same folders: it is another view of the same files.</p></div>
+<div class="task"><div class="task-t">Your turn</div>
+<p>Without using the mouse: go to <code>/data/examples/fnss/human</code>, list it, go back to your home folder, and then into <code>project</code> again. (<code>cd</code> with nothing after it goes home; <code>cd -</code> goes back to where you were.)</p>
+<details class="hint answer"><summary>Show the answer</summary>
+<pre class="code" data-run="term"><code>cd /data/examples/fnss/human
+ls
+cd
+cd project
+pwd</code></pre></details></div>
+
+<h2>2. A table of mutations</h2>
+<p>The seven mutations are listed in <code>variants.tsv</code>, a table kept as text: one line per row, with a <b>tab</b> between the columns (<code>.tsv</code>: tab-separated values). <code>head</code> shows the first lines of a file – here the line of column names and the first mutation:</p>
+<pre class="code" data-run="term"><code>head -2 /data/examples/fnss/variants.tsv</code></pre>
+<p>The lines are long and wrap. <code>cut</code> keeps only some columns (<code>-f</code>: fields): here the first six. And <code>head -1 … | tr '\t' '\n' | cat -n</code> turns the line of names into a numbered list, so you know which number each column has. The <b>pipe</b>, <code>|</code>, sends the output of one command into the next:</p>
+<pre class="code" data-run="term"><code>cut -f 1-6 /data/examples/fnss/variants.tsv
+head -1 /data/examples/fnss/variants.tsv | tr '\t' '\n' | cat -n</code></pre>
+<p>Count the lines, and the genes – <code>tail -n +2</code> starts at line 2 (leaving out the names), <code>sort</code> puts equal lines next to each other, and <code>uniq -c</code> counts them:</p>
+<pre class="code" data-run="term"><code>wc -l /data/examples/fnss/variants.tsv
+cut -f 2 /data/examples/fnss/variants.tsv | tail -n +2 | sort | uniq -c</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>9 lines: the names and 8 rows. Seven are the short-sleep mutations, in five genes – <i>BHLHE41</i> has two (P384R and Y362H), and so does <i>GRM1</i>, one of them numbered in its isoform <code>GRM1b</code>. The eighth, NPSR1 N107I, is a common variant that the project uses for comparison (column 15, <code>kind</code>).</p></div>
+<div class="task"><div class="task-t">Your turn</div>
+<ol>
+<li>Who found each mutation, and where? Print the columns <code>variant</code>, <code>study</code> and <code>people</code>.</li>
+<li>Which mutations were tested in mice made to carry them (column <code>animal_model</code>)?</li>
+<li>What does each paper claim about conservation (column <code>conservation_claim</code>)? Copy the claims into your logbook: this project tests them.</li>
+</ol>
+<details class="hint"><summary>Show a hint</summary><p>The numbered list of columns gives you the numbers: <code>cut -f 1,9,11</code> and so on.</p></details>
+<details class="hint answer"><summary>Show the answer</summary>
+<pre class="code" data-run="term"><code>cut -f 1,9,11 /data/examples/fnss/variants.tsv
+cut -f 1,12 /data/examples/fnss/variants.tsv
+cut -f 1,14 /data/examples/fnss/variants.tsv</code></pre>
+<p>Five come with knock-in mice (the mutation put into the mouse's own gene); DEC2 P384R with transgenic mice (an extra copy of the human gene, with the mutation); Y362H was tested only in cells. The claims range from "conserved among mammals and birds" to "highly conserved in vertebrates and invertebrates".</p></details></div>
+
+<h2>3. Proteins are text too</h2>
+<p>A protein sequence is written as a string of one-letter codes for its amino acids: M for methionine (the first amino acid of nearly every protein), P proline, R arginine, Y tyrosine, H histidine, A alanine, V valine, S serine, T threonine, N asparagine, W tryptophan… Sequences are kept in <b>FASTA</b> files: a line that starts with <code>&gt;</code> and names the sequence, then the sequence itself, a few dozen letters to a line.</p>
+<pre class="code" data-run="term"><code>head -3 /data/examples/fnss/human/human_proteins.fasta
+grep "&gt;" /data/examples/fnss/human/human_proteins.fasta
+grep -c "&gt;" /data/examples/fnss/human/human_proteins.fasta</code></pre>
+<p><code>grep</code> prints the lines that contain a pattern – here <code>&gt;</code>, so the name lines – and <code>grep -c</code> counts them. Each name line has the name the project uses for the protein, its RefSeq accession and a description.</p>
+<p>A sequence split over many lines is awkward to work with. <code>seqtk seq -l0</code> writes each sequence on one line, and <code>paste - -</code> joins every two lines into one, with a tab between them: name, then sequence. That turns the FASTA file into a table, which you keep in <code>results</code>:</p>
+<pre class="code" data-run="term"><code>seqtk seq -l0 /data/examples/fnss/human/human_proteins.fasta | head -2 | cut -c 1-80
+seqtk seq -l0 /data/examples/fnss/human/human_proteins.fasta | paste - - &gt; results/human_proteins.tsv
+cut -f 1 results/human_proteins.tsv</code></pre>
+<p><code>&gt;</code> at the end of a command (outside quotes) sends its output into a file instead of the screen – careful: it replaces whatever the file held. <code>cut -c 1-80</code> cuts each line to its first 80 characters.</p>
+<p>How long is each protein? <code>awk</code> is the tool for columns: <code>-F'\t'</code> says they are separated by tabs, <code>$1</code> and <code>$2</code> are the first and second, <code>length($2)</code> counts the letters of the second, and <code>split</code> and <code>substr</code> take the first word of the name without its <code>&gt;</code>:</p>
+<pre class="code" data-run="term"><code>awk -F'\t' '{split($1, name, " "); print substr(name[1], 2), length($2)}' results/human_proteins.tsv</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>Six proteins: BHLHE41 <b>482</b> amino acids, ADRB1 <b>477</b>, NPSR1 <b>371</b>, GRM1 <b>1194</b>, GRM1b <b>906</b> and SIK3 <b>1369</b>.</p></div>
+
+<h2>4. Find the mutated amino acids</h2>
+<p>DEC2's mutation is P384R: proline at position 384 changed to arginine. Is there a P at position 384 of the human protein? <code>grep "^&gt;BHLHE41 "</code> keeps the line of BHLHE41 (<code>^</code> means "at the start of the line", and the space after the name stops <code>GRM1</code> from matching <code>GRM1b</code> too); <code>cut -f 2</code> keeps the sequence; <code>cut -c 384</code> its 384th letter:</p>
+<pre class="code" data-run="term"><code>grep "^&gt;BHLHE41 " results/human_proteins.tsv | cut -f 2 | cut -c 384
+grep "^&gt;BHLHE41 " results/human_proteins.tsv | cut -f 2 | cut -c 374-394</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>Position 384 is <b>P</b>, and the 21 amino acids around it (374–394) are <code>KYLYPAAAAAPFPLLYPGIPA</code>: P384 is the eleventh, the first P of <code>PFPLLYPG</code>. A stretch rich in prolines and alanines – the "proline-rich region" of the paper.</p></div>
+<div class="task"><div class="task-t">Your turn</div>
+<p>Check two more by hand: Y362 of BHLHE41, and A187 of ADRB1. Then look at position 889 of GRM1 and of GRM1b, and the stretch 880–906 of both. What do you notice?</p>
+<details class="hint answer"><summary>Show the answer</summary>
+<pre class="code" data-run="term"><code>grep "^&gt;BHLHE41 " results/human_proteins.tsv | cut -f 2 | cut -c 362
+grep "^&gt;ADRB1 " results/human_proteins.tsv | cut -f 2 | cut -c 187
+grep "^&gt;GRM1 " results/human_proteins.tsv | cut -f 2 | cut -c 880-906
+grep "^&gt;GRM1b " results/human_proteins.tsv | cut -f 2 | cut -c 880-906</code></pre>
+<p>Y and A, as they should be. Position 889 is <b>N</b> in GRM1 (isoform alpha) and <b>R</b> in GRM1b: the two isoforms are the same up to position 886 (<code>KAGAGNA</code>) and then go their own ways – mGluR1a with a long tail of 1,194 in all, mGluR1b with 20 amino acids of its own (<code>KKRQPEFSPTSQCPSAHVQL</code>). "R889W" only makes sense in mGluR1b. A position always belongs to one particular protein sequence.</p></details></div>
+
+<h3>All eight at once: a loop</h3>
+<p>Doing this by hand for every mutation is slow and invites slips. A <b>loop</b> does it for each line of the table. <code>while read variant gene pos aa</code> reads one line at a time into four <b>variables</b>; inside the loop, <code>$gene</code> and <code>$pos</code> stand for their values, and <code>$( … )</code> catches the output of a command into a variable:</p>
+<pre class="code" data-run="term"><code>tail -n +2 /data/examples/fnss/variants.tsv | cut -f 1,2,4,5 | while read variant gene pos aa
+do
+  found=$(grep "^&gt;$gene " results/human_proteins.tsv | cut -f 2 | cut -c "$pos")
+  echo "$variant: expected $aa, found $found"
+done</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>Eight lines, and in each the amino acid found is the one expected: <code>BHLHE41_P384R: expected P, found P</code> … <code>NPSR1_N107I: expected N, found N</code>.</p></div>
+<p>Keep the 21 amino acids around each mutation for later – a table of two columns, written with <code>printf</code> (<code>%s</code> is replaced by a value, <code>\t</code> is a tab and <code>\n</code> the end of a line). <code>$((pos - 10))</code> does arithmetic:</p>
+<pre class="code" data-run="term"><code>tail -n +2 /data/examples/fnss/variants.tsv | cut -f 1,2,4 | while read variant gene pos
+do
+  context=$(grep "^&gt;$gene " results/human_proteins.tsv | cut -f 2 | cut -c $((pos - 10))-$((pos + 10)))
+  printf "%s\t%s\n" "$variant" "$context"
+done &gt; results/mutation_context.tsv
+cat results/mutation_context.tsv</code></pre>
+<div class="callout think"><div class="co-t">Think</div><p>Look at the eight stretches. Two are rich in prolines (P), as is typical of parts of proteins without a fixed shape; one (ADRB1's) is full of amino acids that avoid water – A, I, L, V, F – as is typical of a stretch that crosses a cell membrane. You will see whether these guesses are right in stage 8.</p></div>
+
+<h2>5. Look them up</h2>
+<p>Everything so far came from files someone gave you. Check it against the sources. <b>UniProt</b> is the main database of proteins: what each does, where it is made, its parts and its known variants. Open DEC2's entry in the <b>Databases</b> tab, and find position 384 in its list of variants (<i>Variants</i> or <i>Features</i>):</p>
+<div class="tryrow"><button class="do" type="button" data-api="uniprot:Q9C0J9">DEC2 (BHLHE41) in UniProt</button> <button class="do" type="button" data-api="uniprot:P08588">ADRB1 in UniProt</button></div>
+<p>And find the paper behind each mutation in <b>Europe PMC</b>, a database of the biomedical literature – most of these papers can be read there in full:</p>
+<div class="tryrow"><button class="do" type="button" data-api="europepmc:search:&quot;natural short sleep&quot;">Search Europe PMC for "natural short sleep"</button></div>
+<div class="callout check"><div class="co-t">Check</div><p>UniProt's DEC2 is <b>Q9C0J9</b>, 482 amino acids long – the same protein as yours. It lists P384R as a natural variant that "affects sleep duration", and a second change at the same position, P384Q. In ADRB1 (<b>P08588</b>), position 187 lies in the fourth transmembrane helix (177–199).</p></div>
+
+<div class="callout log"><div class="co-t">For your logbook</div>
+<ul>
+<li>The commands you learned, each with one line saying what it does – your own cheat sheet.</li>
+<li>A table of the seven mutations: gene, protein, position, the change, the paper, and what it claims about conservation.</li>
+<li>Why "R889W" belongs to GRM1b and not to GRM1.</li>
+<li>One thing that confused you, for your next meeting.</li>
+</ul></div>
+
+<h2>Going further</h2>
+<ul>
+<li><b>Count amino acids.</b> Which amino acid is commonest in DEC2? <code>grep "^&gt;BHLHE41 " results/human_proteins.tsv | cut -f 2 | fold -w 1 | sort | uniq -c | sort -rn | head</code> (<code>fold -w 1</code> puts one letter on each line). Compare it with ADRB1. What does it say about the two proteins?</li>
+<li>Read <a href="#h-terminal">The terminal</a> and <a href="#h-text">Working with text files</a> in the help: a few more commands go a long way.</li>
+</ul>
+<ul class="checklist">
+<li data-check="s1-folders">I made <code>~/project</code> with its three folders, and I can move around with <code>cd</code>, <code>ls</code> and <code>pwd</code>.</li>
+<li data-check="s1-table">I looked into <code>variants.tsv</code> with <code>head</code>, <code>cut</code>, <code>sort</code> and <code>uniq</code>, and copied the conservation claims into my logbook.</li>
+<li data-check="s1-fasta">I can explain what a FASTA file is, and made <code>results/human_proteins.tsv</code>.</li>
+<li data-check="s1-residue">I found P384 of DEC2 and the other mutated amino acids by hand.</li>
+<li data-check="s1-loop">I checked all eight in a loop, and made <code>results/mutation_context.tsv</code>.</li>
+<li data-check="s1-db">I read DEC2's and ADRB1's UniProt entries, and found the papers in Europe PMC.</li>
+<li data-check="s1-log">I wrote this stage up in my logbook.</li>
+</ul>
+<div class="stage-nav"><button type="button" data-goto="h-home"><small>Back</small>← Start here</button><button class="next" type="button" data-goto="h-s02"><small>Next</small>Stage 2 · Hundreds of mammals →</button></div>

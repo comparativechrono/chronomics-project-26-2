@@ -1,0 +1,78 @@
+<!-- id: h-troubleshoot | title: When something goes wrong | group: Reference | summary: Common problems and what to do | keys: troubleshoot ide rstudio spyder format problem 20000 characters problem error help isolated isolation cross-origin threads not working slow stuck crash files gone lost storage full quota not found no such file network failed to fetch cors 429 ai key locked terminal out of memory reload index bai fai chromosome names variant caller plink plink2 pca lapack memory glm covariates allow-no-covars -->
+<h1><!--ICON:help-->When something goes wrong</h1>
+<p class="lede">The usual problems, and what to do about them. Error messages in the notebook and the terminal often carry a hint of their own – and <b>Ask the AI assistant about this error</b> explains them (<a href="#h-ai">AI assistant</a>).</p>
+
+<h2>Starting</h2>
+<dl>
+  <dt>Python or R takes long to start</dt>
+  <dd>The first start of a visit downloads the language (tens of megabytes); later visits use the browser's copy and are quicker. The label at the top right of a notebook says what it is doing.</dd>
+  <dt>A tab says it could not start</dt>
+  <dd>Reload the page (your files are kept). For the 3D viewer: turn on hardware acceleration in the browser's settings. Use a current Chrome, Edge, Firefox or Safari.</dd>
+  <dt>The page is slow or stops answering</dt>
+  <dd>A long computation is running: <b>Stop</b> it (notebook), or press <kbd>Ctrl</kbd>+<kbd>C</kbd> in the terminal – once, and what follows the running program is skipped; twice, and the program itself is stopped. Close other heavy tabs of the browser.</dd>
+</dl>
+
+<h2>Files</h2>
+<dl>
+  <dt>My files are gone</dt>
+  <dd>They are kept in one browser on one computer – is it the same browser, the same computer, the same web address, and not a private window? If the browser's data for the site was cleared, they cannot be recovered: download what you want to keep (<a href="#h-recipe-keep">Keep and share your work</a>).</dd>
+  <dt>"No such file or directory"</dt>
+  <dd>The file is not where the code looked. A notebook works in its own folder (<code>~/notebooks</code>): use full paths such as <code>/data/examples/…</code> or <code>/home/user/…</code> (Python's <code>open()</code> does not understand <code>~</code>). <code>%pwd</code> or <code>getwd()</code> shows the folder; the Files tab shows the names.</dd>
+  <dt>"Read-only file system" or "Permission denied"</dt>
+  <dd><code>/data/examples</code> is read-only: its files cannot be changed, and nothing new can be written into it – not even what a program writes next to its input (<code>samtools faidx</code> writes its index next to the FASTA file). Copy what you need into your home folder and work there.</dd>
+  <dt>A PDF "cannot be read as a PDF"</dt>
+  <dd>The Files tab draws PDF files itself, so no PDF plug-in of the browser is needed. A file it cannot read is damaged, is not a PDF, or is not finished: a plot that R or Python is still drawing into is written only when it is closed – <code>dev.off()</code> after <code>pdf("plot.pdf")</code> in R, <code>plt.savefig("plot.pdf")</code> or the end of <code>with PdfPages(…)</code> in Python. Download the file to open it with another program.</dd>
+  <dt>The space is running out</dt>
+  <dd><b>My files</b> (top right) shows how much is used. Delete large intermediate files – SAM files, unsorted BAM files, trimmed reads – or download and delete them.</dd>
+</dl>
+
+<h2>Programs and code</h2>
+<dl>
+  <dt>"command not found"</dt>
+  <dd>The program is not in the workbench: <code>help</code> lists what is. Python packages: <code>%pip install NAME</code>; R packages: <code>install.packages("NAME")</code>.</dd>
+  <dt>plink2: "… this page is not" cross-origin isolated</dt>
+  <dd>PLINK 2 works on several threads, which a browser allows only in a cross-origin isolated page. Reload the page: the workbench isolates it as it starts. It cannot when the page was not opened over https (or from localhost), or in a browser window that allows no service workers (some private windows) – see <a href="#h-limits/threads">programs on several threads</a>.</dd>
+  <dt>A variant caller says an index is missing, or that the chromosomes do not match</dt>
+  <dd>Index the BAM files (<code>samtools index</code>) and the reference (<code>samtools faidx</code>) – again after a program has written a new BAM file. The reference must be the one the reads were mapped to, with the sequence names of the BAM header (<code>samtools view -H file.bam | grep @SQ</code>).</dd>
+  <dt>plink2: "--pca requires plink2 to be built with LAPACK"</dt>
+  <dd>This build of PLINK 2 has no LAPACK, the library its principal components (<code>--pca</code>) and <code>--pheno-svd</code> need: they are not available here. The rest of PLINK works. See <a href="#h-plink2">Genotypes and association</a>.</dd>
+  <dt>plink2 --glm: "invoked without --covar … usually an analytical mistake"</dt>
+  <dd>PLINK asks for covariates in an association test – ancestry (principal components), sex, age – because a test without them is usually confounded. Give them with <code>--covar FILE</code>, or, when you are sure, add the modifier: <code>--glm allow-no-covars</code>.</dd>
+  <dt>plink2: "Failed to open NAME.psam" (or .pgen, .pvar, .bed …)</dt>
+  <dd><code>--pfile NAME</code> reads three files, <code>NAME.pgen</code>, <code>NAME.pvar</code> and <code>NAME.psam</code> (<code>--bfile NAME</code>: <code>.bed</code>, <code>.bim</code>, <code>.fam</code>): give the name without its ending, and make the files first (<code>plink2 --vcf FILE.vcf.gz --make-pgen --out NAME</code>).</dd>
+  <dt>A program says it is out of memory, or stops without a message</dt>
+  <dd>The data is too big for the browser: take a part of it (<code>samtools view</code> of a region, <code>seqtk sample</code>) – see <a href="#h-limits">What is different in the browser</a>.</dd>
+  <dt>Python or R forgot my variables</dt>
+  <dd>The language was restarted – by <b>Restart</b>, <b>Stop</b>, or a reload of the page. Run the notebook's cells again from the top (<b>Run all</b>).</dd>
+  <dt>The terminal does not let me type</dt>
+  <dd>The AI agent is working in it: wait, or press <b>Stop</b> in the AI assistant tab.</dd>
+</dl>
+
+<h2>The internet</h2>
+<dl>
+  <dt>"Failed to fetch", "no answer", a network error</dt>
+  <dd>Either the internet connection is off, or the site does not allow requests from web pages (CORS – KEGG and most web pages do not). Download such files with your browser and upload them in the Files tab.</dd>
+  <dt>HTTP 429, "too many requests"</dt>
+  <dd>Wait a minute; in code, pause between requests (<a href="#h-recipe-api">Databases from code</a>).</dd>
+  <dt>HTTP 400 or 404</dt>
+  <dd>The service did not understand the query, or there is no such identifier: check the spelling and the version (<code>NM_000769.4</code>).</dd>
+  <dt>HTTP 500 or 503</dt>
+  <dd>The service is busy or down – try again later.</dd>
+</dl>
+
+<h2>The other tabs</h2>
+<dl>
+  <dt>RStudio or Spyder takes a long time to open, or says it could not be opened</dt>
+  <dd>The first time, the IDE downloads R or Python, which can take a minute or so on a slow connection. If it fails, check your internet connection and press <b>Try again</b>, or reload the page; your files are kept.</dd>
+  <dt>My variable is missing in RStudio or Spyder (or in the notebook)</dt>
+  <dd>Each IDE has an R or a Python of its own, separate from the notebooks’, so a variable only exists where you created it. Run the code that creates it in the IDE as well (<a href="#h-ide/separate">The IDE tab</a>).</dd>
+  <dt>Spyder: input() or the debugger doesn’t work</dt>
+  <dd>Both need the page to be cross-origin isolated, and the console says so when it starts if it isn’t. Reload the page, or open it in an ordinary (not private) window (<a href="#h-spyder/isolation">Spyder</a>).</dd>
+  <dt>RStudio: "there is no package called …"</dt>
+  <dd>In RStudio, as on your own computer, a package has to be installed once before <code>library()</code> can load it: run <code>install.packages("NAME")</code>, or use <b>Tools ▸ Install Packages…</b> (<a href="#h-rstudio">RStudio</a>).</dd>
+  <dt>The AI assistant says "Not connected", the key is not accepted, or it is busy</dt>
+  <dd>Check the service and key in <!--ICON:gear--> AI settings and press <b>Test</b>. Free keys allow only a few requests per minute: wait a minute.</dd>
+</dl>
+
+<h2>Reporting a problem</h2>
+<p>Say which browser and computer you use, what you did, and what happened – with the exact message (copy it, or take a screenshot). Leave out any personal data.</p>

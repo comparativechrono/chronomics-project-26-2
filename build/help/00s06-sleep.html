@@ -1,0 +1,100 @@
+<!-- id: h-s06 | title: Stage 6 · How long mammals sleep | group: The project | stage: 6 | tab: yes | tabtitle: Stage 6 – How long mammals sleep | summary: The sleep table: two compilations of daily sleep in 101 species; who sleeps least and most; how well the compilations agree; sleep by order and by body size; which species have sequences | keys: stage 6 sleep total sleep time mammals phylogeny of sleep capellini msleep savage west read.delim summary order which.min hist histogram cor cor.test scatter plot abline boxplot tapply median log10 body mass marine unihemispheric genome_species match -->
+<h1>Stage 6 · How long mammals sleep</h1>
+<div class="stage-meta"><span class="when">Weeks 6–7</span><span>about 4 hours</span><span class="stage-progress"></span></div>
+<p class="lede">Before you ask whether the amino acids go with sleep, get to know the sleep data: where they come from, how much they vary, how far two compilations agree, and what else goes with sleeping little or a lot.</p>
+<div class="skills"><b>You will learn</b><ul>
+<li>to explore a table in R: <code>summary</code>, sorting, picking rows and columns</li>
+<li>histograms, scatter plots and box plots</li>
+<li>correlation, and how to test it</li>
+<li>where numbers in a published table come from – and how much to trust them</li>
+</ul></div>
+
+<h2>1. The sleep table</h2>
+<p>Open the notebook of this stage and read the table:</p>
+<div class="tryrow"><button class="do" type="button" data-stage-nb="r|stage06-sleep|Stage 6 – How long mammals sleep">Open my stage 6 notebook</button></div>
+<pre class="code" data-run="r"><code>sleep &lt;- read.delim("/data/examples/fnss/sleep/mammal_sleep.tsv")
+dim(sleep)
+names(sleep)
+head(sleep, 3)</code></pre>
+<p>One row per species. Two columns hold the hours of sleep in 24 hours, from two compilations of published studies (<a href="#h-data">The project data</a> has the details):</p>
+<ul>
+<li><code>sleep_pos_h</code> – the <b>Phylogeny of Sleep</b> database (McNamara et al. 2008), using only recordings that meet the criteria of Capellini et al. (2008): sleep measured with the EEG, for at least 12 hours, in adult animals on land; the median of a species' recordings.</li>
+<li><code>sleep_msleep_h</code> – the <b>msleep</b> table of Savage &amp; West (2007), with body mass.</li>
+</ul>
+<p>Where a species has no value, R shows <code>NA</code> ("not available"); <code>summary</code> counts them:</p>
+<pre class="code" data-run="r"><code>summary(sleep$sleep_pos_h)
+summary(sleep$sleep_msleep_h)
+sum(!is.na(sleep$sleep_pos_h))
+sum(!is.na(sleep$sleep_msleep_h))</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>101 species and 10 columns. The Phylogeny of Sleep has values for <b>66</b> species (3.1 to 20.4 hours, median 10.5), msleep for <b>77</b> (1.9 to 19.9, median 10.3).</p></div>
+
+<h2>2. Who sleeps least, and who most?</h2>
+<p><code>order</code> gives the order of the rows that sorts a column; use it to pick the rows, and choose the columns by name:</p>
+<pre class="code" data-run="r"><code>by_sleep &lt;- sleep[order(sleep$sleep_pos_h), c("common_name", "order", "sleep_pos_h")]
+head(by_sleep, 5)
+by_sleep[!is.na(by_sleep$sleep_pos_h), ][62:66, ]
+sleep[which.min(sleep$sleep_msleep_h), c("common_name", "sleep_msleep_h")]
+sleep[which.max(sleep$sleep_msleep_h), c("common_name", "sleep_msleep_h")]
+sleep[sleep$species == "Homo sapiens", c("common_name", "sleep_pos_h", "sleep_msleep_h")]
+hist(sleep$sleep_pos_h, breaks = seq(0, 22, 1), col = "grey80",
+     main = "Daily sleep of 66 mammal species", xlab = "Hours of sleep in 24 hours")</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>Least (Phylogeny of Sleep): the donkey (3.1 h), cow, horse, sheep and the yellow-bellied marmot (3.9 h). Most: three armadillos and two opossums, up to the large hairy armadillo (20.4 h). In msleep the least is the giraffe (1.9 h), the most the little brown bat (19.9 h). Humans: 8 hours in msleep, none in the Phylogeny of Sleep table.</p></div>
+
+<h2>3. Do the two compilations agree?</h2>
+<p>42 species are in both. A scatter plot with the line on which the two would be equal (<code>abline(0, 1)</code>: intercept 0, slope 1), and their <b>correlation</b>, <i>r</i>: 1 if one rises exactly in step with the other, 0 if they have nothing to do with each other:</p>
+<pre class="code" data-run="r"><code>both &lt;- sleep[!is.na(sleep$sleep_pos_h) &amp; !is.na(sleep$sleep_msleep_h), ]
+nrow(both)
+plot(both$sleep_msleep_h, both$sleep_pos_h, pch = 19, xlab = "msleep (hours)", ylab = "Phylogeny of Sleep (hours)")
+abline(0, 1, lty = 2)
+cor.test(both$sleep_pos_h, both$sleep_msleep_h)
+both$diff &lt;- both$sleep_pos_h - both$sleep_msleep_h
+both[abs(both$diff) &gt; 3, c("common_name", "sleep_pos_h", "sleep_msleep_h")]</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p><i>r</i> = <b>0.84</b> (P = 3 × 10<sup>−12</sup>): the two agree well, but not perfectly. Five species differ by more than 3 hours: the three-toed sloth (8.4 vs 14.4), the golden-mantled ground squirrel (8.7 vs 15.9), the European hedgehog, the short-nosed echidna and the tree shrew.</p></div>
+<div class="callout think"><div class="co-t">Think</div><p>Why might two tables give a species such different values? The compilations partly use the same studies, and partly different ones: animals recorded for different lengths of time, at different ages and seasons, in a cage with food and no predators or in the wild, with or without the EEG. What does this mean for any analysis that uses one number per species?</p></div>
+
+<h2>4. What goes with sleep?</h2>
+<p>By order – a box plot, one box per order: the thick line is the median, the box holds the middle half of the species. <code>par(mar = …)</code> makes room under the plot for the names, and <code>las = 2</code> turns them sideways:</p>
+<pre class="code" data-run="r"><code>par(mar = c(9, 4, 2, 1))
+boxplot(sleep_pos_h ~ order, data = sleep, las = 2, xlab = "", ylab = "Hours of sleep (Phylogeny of Sleep)")
+round(sort(tapply(sleep$sleep_pos_h, sleep$order, median, na.rm = TRUE)), 1)</code></pre>
+<p>And by size. Body masses go from a few grams to tonnes, so plot them on a log scale (<code>log10</code>: 1 is 10 kg, 2 is 100 kg, −2 is 10 g):</p>
+<pre class="code" data-run="r"><code>par(mar = c(5, 4, 2, 1))
+plot(log10(sleep$body_mass_kg), sleep$sleep_msleep_h, pch = 19,
+     xlab = "Body mass (log10 kg)", ylab = "Hours of sleep (msleep)")
+cor.test(log10(sleep$body_mass_kg), sleep$sleep_msleep_h)</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>The hoofed mammals sleep least (median 3.4 h for horses and their relatives, 3.5 h for the even-toed ones), opossums and armadillos most (18–19 h); primates and carnivores sleep about 10 h, rodents 12. The bigger the mammal, the less it sleeps: <i>r</i> = <b>−0.55</b> over 77 species (P = 3 × 10<sup>−7</sup>).</p></div>
+
+<h2>5. Sleep in the sea</h2>
+<pre class="code" data-run="r"><code>table(sleep$environment)
+sleep[sleep$environment == "marine", c("common_name", "sleep_pos_h", "sleep_msleep_h")]</code></pre>
+<p>Five marine mammals – dolphin, porpoise, three seals – have values only in msleep. Dolphins and porpoises sleep with one half of the brain at a time, and seals sleep differently in water and on land; the criteria of the Phylogeny of Sleep table leave marine records out, because their sleep cannot be compared with that of land mammals in the same way. Keep this in mind in stage 7: the whales and dolphins are 45 of the 108 species with S at SIK3 783 – and none of them has a value in the Phylogeny of Sleep table.</p>
+
+<h2>6. Which species have sequences?</h2>
+<p>The sleep studies were done on the species that were at hand; the genomes were sequenced for other reasons. The last two columns link them: <code>genome_species</code> is the species of the sequence files that stands for each sleep species – the species itself, or one of the same genus – and <code>match</code> says which:</p>
+<pre class="code" data-run="r"><code>table(sleep$match)
+sleep[sleep$match == "genus", c("species", "genome_species")]</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>64 species have sequences of their own, 16 a species of the same genus, and 21 none.</p></div>
+<div class="callout think"><div class="co-t">Think</div><p>Is it fair to give the owl monkey <i>Aotus trivirgatus</i> the amino acids of <i>Aotus nancymaae</i>? When would it not be? (Think of how long ago two species of one genus split, compared with how often these positions change – stage 5.)</p></div>
+
+<div class="callout log"><div class="co-t">For your logbook</div>
+<ul>
+<li>Where the sleep data come from, and the criteria of the Phylogeny of Sleep table.</li>
+<li>The range of sleep in mammals, the extremes, and what goes with sleep (order, body size).</li>
+<li>How well the two compilations agree, and why they might not.</li>
+<li>Your histogram and box plot, saved in <code>figures</code> with captions.</li>
+</ul></div>
+
+<h2>Going further</h2>
+<ul>
+<li><b>Sleep and the tree.</b> Do close relatives sleep alike? Put the sleep times on the tree of stage 5: prune it to the <code>genome_species</code> with a sleep value and colour the tips by hours of sleep. (<code>phytools::phylosig</code> would measure it, but it is a big package; you will measure it a different way in stage 7.)</li>
+<li><b>REM sleep.</b> msleep also has REM sleep for many species (the <code>msleep</code> table of the R package ggplot2: <code>library(ggplot2); head(msleep)</code>). Which mammals have the most REM sleep?</li>
+</ul>
+<ul class="checklist">
+<li data-check="s6-read">I read the sleep table and know where each column comes from.</li>
+<li data-check="s6-extremes">I found the species that sleep least and most, and drew a histogram.</li>
+<li data-check="s6-compare">I compared the two compilations, and found the species they disagree on.</li>
+<li data-check="s6-order">I looked at sleep by order and by body size.</li>
+<li data-check="s6-match">I know which sleep species have sequences, and how they are linked.</li>
+<li data-check="s6-log">I saved my figures and wrote this stage up.</li>
+</ul>
+<div class="stage-nav"><button type="button" data-goto="h-s05"><small>Back</small>← Stage 5 · Where the changes happened</button><button class="next" type="button" data-goto="h-s07"><small>Next</small>Stage 7 · Do the amino acids track sleep? →</button></div>

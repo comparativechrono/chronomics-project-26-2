@@ -1,0 +1,100 @@
+/* =====================================================================
+   The project guide: the stage tabs at the top of the left pane, the
+   checklists, and the boxes of the stage pages (checkpoints, hints,
+   questions to think about, the logbook).
+   ===================================================================== */
+
+/* ---------- the stage tabs ---------- */
+.guide-tabs {
+  flex: none;
+  position: sticky; top: 45px; z-index: 5;
+  display: flex; gap: 3px; padding: 6px 10px 7px; overflow-x: auto; scrollbar-width: thin;
+  background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line);
+}
+.guide-tabs .gt {
+  flex: 0 0 auto; position: relative; min-width: 30px; height: 30px; padding: 0 8px 3px;
+  border: 1px solid var(--line-2); border-radius: 7px; background: var(--panel); color: var(--ink-2);
+  font: 600 0.82rem/1 var(--font); cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+}
+.guide-tabs .gt:hover { border-color: var(--accent); color: var(--accent-2); }
+.guide-tabs .gt:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.guide-tabs .gt.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.guide-tabs .gt.complete:not(.on) { background: var(--good-soft); border-color: #a9d8bf; color: var(--good); }
+.guide-tabs .gt-help { margin-left: auto; }
+.guide-tabs .gt-bar { position: absolute; left: 5px; right: 5px; bottom: 3px; height: 3px; border-radius: 2px; background: transparent; overflow: hidden; }
+.guide-tabs .gt.started .gt-bar, .guide-tabs .gt.complete .gt-bar { background: var(--line); }
+.guide-tabs .gt-bar i { display: block; height: 100%; width: 0; background: var(--good); }
+.guide-tabs .gt.on .gt-bar { background: rgba(255, 255, 255, 0.35); }
+.guide-tabs .gt.on .gt-bar i { background: #fff; }
+
+/* ---------- the head of a stage page ---------- */
+.stage-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: -0.2em 0 0.9em; font-size: 0.8rem; }
+.stage-meta span { padding: 2px 9px; border-radius: 999px; background: var(--panel-3); color: var(--ink-2); }
+.stage-meta .when { background: var(--accent-soft); color: var(--accent-2); }
+.stage-meta .stage-progress { background: var(--good-soft); color: var(--good); }
+.stage-meta .stage-progress:empty { display: none; }
+.skills { margin: 0.6em 0 1em; padding: 9px 14px; border-radius: var(--radius); border: 1px solid var(--line); background: var(--panel-2); }
+.skills b { display: block; font-size: 0.82rem; margin-bottom: 3px; color: var(--ink-2); }
+.skills ul { margin: 0; padding-left: 1.2em; }
+
+/* ---------- checklists ---------- */
+ul.checklist { list-style: none; padding-left: 0; margin: 0.6em 0 1.1em; }
+ul.checklist > li { position: relative; padding: 6px 8px 6px 34px; border: 1px solid var(--line); border-radius: 8px; margin: 5px 0; background: var(--panel); }
+ul.checklist > li > input.ck { position: absolute; left: 10px; top: 8px; width: 16px; height: 16px; margin: 0; accent-color: var(--good); cursor: pointer; }
+ul.checklist > li.done { background: var(--good-soft); border-color: #bfe3cf; }
+ul.checklist > li.done > :not(input) { color: var(--ink-2); }
+
+/* ---------- boxes ---------- */
+.callout.check { background: var(--good-soft); border-color: #bfe3cf; }
+.callout.check .co-t { color: var(--good); }
+.callout.think { background: var(--pharm-soft); border-color: #dccdf1; }
+.callout.think .co-t { color: var(--pharm); }
+.callout.log { background: var(--act-soft); border-color: #f4cfae; }
+.callout.log .co-t { color: var(--act); }
+.callout.science { background: #f4f7fb; border-color: #d5deea; }
+.callout.science .co-t { color: #2d4c7a; }
+
+details.hint { margin: 0.5em 0 0.9em; border: 1px dashed var(--line-2); border-radius: 8px; background: var(--panel-2); }
+details.hint > summary { cursor: pointer; padding: 6px 10px; font-weight: 600; font-size: 0.86rem; color: var(--accent-2); }
+details.hint[open] > summary { border-bottom: 1px dashed var(--line-2); }
+details.hint > :not(summary) { margin-left: 12px; margin-right: 12px; }
+details.hint > :last-child { margin-bottom: 10px; }
+details.answer > summary { color: var(--act); }
+
+.task { margin: 1em 0; padding: 10px 14px; border-left: 4px solid var(--act); background: var(--act-soft); border-radius: 0 var(--radius) var(--radius) 0; }
+.task > :first-child { margin-top: 0; }
+.task > :last-child { margin-bottom: 0; }
+.task .task-t { font-weight: 700; color: var(--act); font-size: 0.86rem; margin-bottom: 4px; }
+
+/* ---------- the stages, on the home page ---------- */
+.stage-list { list-style: none; padding: 0; margin: 0.8em 0 1.2em; counter-reset: st; }
+.stage-list li { margin: 6px 0; }
+.stage-list button { width: 100%; text-align: left; display: grid; grid-template-columns: 34px 1fr auto; gap: 2px 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); cursor: pointer; font: inherit; color: inherit; }
+.stage-list button:hover { border-color: var(--accent); background: var(--accent-soft); }
+.stage-list .n { grid-row: span 2; width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 0.85rem; }
+.stage-list .t { font-weight: 650; }
+.stage-list .w { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+.stage-list .s { grid-column: 2 / 4; font-size: 0.82rem; color: var(--ink-2); }
+
+/* ---------- next and previous ---------- */
+.stage-nav { display: flex; gap: 8px; justify-content: space-between; margin: 2em 0 0.5em; padding-top: 12px; border-top: 1px solid var(--line); }
+.stage-nav button { flex: 1; max-width: 49%; text-align: left; padding: 8px 12px; border: 1px solid var(--line-2); border-radius: 9px; background: var(--panel); cursor: pointer; font: inherit; }
+.stage-nav button:hover { border-color: var(--accent); }
+.stage-nav button.next { text-align: right; margin-left: auto; }
+.stage-nav small { display: block; color: var(--muted); font-size: 0.75rem; }
+
+/* ---------- figures of the guide ---------- */
+.guide-fig { margin: 0.8em 0 1.1em; }
+.guide-fig svg { width: 100%; height: auto; display: block; }
+.guide-fig figcaption { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+.seqline { font-family: var(--mono); font-size: 0.78rem; line-height: 1.5; word-break: break-all; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+.seqline .u1 { background: #ffe8b3; } .seqline .u2 { background: #c9e7ff; } .seqline .u3 { background: #d9f2d0; }
+.seqline .u4 { background: #f6d6f0; } .seqline .u5 { background: #e3e0ff; }
+
+/* ---------- the codon table (stage 2) and the glossary ---------- */
+table.codons { border-collapse: collapse; font-family: var(--mono); font-size: 0.78rem; margin: 0.6em 0 0.4em; }
+table.codons th, table.codons td { border: 1px solid var(--line); padding: 4px 8px; text-align: left; vertical-align: top; line-height: 1.45; }
+table.codons th { background: var(--panel-2); font-weight: 700; text-align: center; }
+.help-page p.small { font-size: 0.8rem; color: var(--ink-2); }
+dl.glossary dt { font-weight: 700; margin-top: 0.7em; }
+dl.glossary dd { margin: 0.15em 0 0 1.1em; color: var(--ink-2); }

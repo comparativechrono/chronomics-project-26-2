@@ -1,0 +1,121 @@
+<!-- id: h-s07 | title: Stage 7 · Do the amino acids track sleep? | group: The project | stage: 7 | tab: yes | tabtitle: Stage 7 – Do the amino acids track sleep? | summary: Join the amino acids to the sleep times; a t-test; why species are not independent; phylogenetic regression with phylolm (Pagel's lambda, Brownian motion); GRM1 458 and SIK3 783 | keys: stage 7 merge aggregate mean t.test lm linear model p value stripchart boxplot independence phylogenetic comparative method felsenstein phylolm lambda pagel brownian motion pgls regression grm1 threonine sik3 serine sleep duration power -->
+<h1>Stage 7 · Do the amino acids track sleep?</h1>
+<div class="stage-meta"><span class="when">Weeks 7–8</span><span>about 5 hours</span><span class="stage-progress"></span></div>
+<p class="lede">The central question of the project. GRM1 458 and SIK3 783 differ between mammals. Do the mammals with another amino acid than the human one sleep a different amount? A simple test says yes – and a test that knows the family tree changes the answer.</p>
+<div class="skills"><b>You will learn</b><ul>
+<li>to join two tables, and to average rows that belong together (<code>merge</code>, <code>aggregate</code>)</li>
+<li>to compare two groups: a plot, the means, a t-test</li>
+<li>why species are not independent data – and phylogenetic regression with <code>phylolm</code></li>
+<li>to read a null result: what it does and does not show</li>
+</ul></div>
+
+<h2>1. Join the amino acids to the sleep times</h2>
+<p>Open the notebook of this stage, read the two tables, and keep GRM1 458. <code>merge</code> joins the rows whose <code>genome_species</code> (in the sleep table) is the same as <code>species</code> (in yours):</p>
+<div class="tryrow"><button class="do" type="button" data-stage-nb="r|stage07-tests|Stage 7 – Do the amino acids track sleep?">Open my stage 7 notebook</button></div>
+<pre class="code" data-run="r"><code>sleep &lt;- read.delim("/data/examples/fnss/sleep/mammal_sleep.tsv")
+res &lt;- read.delim("~/project/results/species_residues.tsv")
+grm &lt;- res[res$variant == "GRM1_S458A", c("species", "residue")]
+d &lt;- merge(sleep, grm, by.x = "genome_species", by.y = "species")
+nrow(d)
+table(d$residue)
+d1 &lt;- d[!is.na(d$sleep_pos_h), ]
+table(d1$residue)
+d1$genome_species[duplicated(d1$genome_species)]</code></pre>
+<p>Some genome species stand for more than one sleep species – the olive baboon's sequence for four kinds of baboon, the crab-eating macaque's for three other macaques. They have the same amino acid, so they are not separate evidence about it: average them, so that each genome species counts once. <code>aggregate</code> computes the mean of <code>sleep_pos_h</code> for each combination of the columns after the <code>~</code>:</p>
+<pre class="code" data-run="r"><code>per &lt;- aggregate(sleep_pos_h ~ genome_species + residue, data = d1, FUN = mean)
+nrow(per)
+table(per$residue)</code></pre>
+<div class="callout check"><div class="co-t">Check</div><p>76 sleep species have a GRM1 amino acid (49 S, 27 T); 51 of them have a Phylogeny of Sleep value (40 S, 11 T). After averaging: <b>46</b> genome species, <b>35 S</b> and <b>11 T</b>.</p></div>
+
+<h2>2. A first test</h2>
+<pre class="code" data-run="r"><code>tapply(per$sleep_pos_h, per$residue, mean)
+stripchart(sleep_pos_h ~ residue, data = per, vertical = TRUE, method = "jitter", pch = 19,
+           xlab = "Amino acid at GRM1 458", ylab = "Hours of sleep (Phylogeny of Sleep)")
+t.test(sleep_pos_h ~ residue, data = per, var.equal = TRUE)
+per[per$residue == "T", ]</code></pre>
+<p>A <b>t-test</b> asks whether the difference between the means of two groups is larger than would be expected by chance if there were no real difference; the P-value is how often a difference at least this large would turn up by chance alone. <code>stripchart</code> shows every species as a dot; <code>method = "jitter"</code> moves the dots a little sideways so they do not hide each other.</p>
+<div class="callout check"><div class="co-t">Check</div><p>The S species sleep <b>11.5</b> hours on average, the T species <b>8.2</b>: 3.3 hours less, and <b>P = 0.013</b>. The 11 T species are the cow, sheep, horse and donkey, the dog, red fox and cat, the hedgehog, two moles and a shrew.</p></div>
+<p>Mammals with threonine at GRM1 458 sleep three hours less – and the short sleepers' mutation is also at GRM1 458! Before you write that down, look at the list of T species again, and at stage 5.</p>
+
+<h2>3. Species are not independent</h2>
+<p>A t-test assumes that every data point is independent evidence. Species are not. All 11 T species are laurasiatherians, and all inherited their T from one ancestor, about 79 million years ago (stage 5). They also inherited a great deal else – four of the 11 are hoofed mammals, which sleep little (stage 6) for reasons that may have nothing to do with GRM1. The T and the short sleep could go together simply because both run in the same branch of the tree. In effect there is <b>one</b> change of amino acid behind the 11 species, not 11 (Felsenstein 1985).</p>
+<p>A <b>phylogenetic regression</b> allows for this. It expects close relatives to be alike, as much as the tree says they should be, and gives a group of close relatives less weight than the same number of unrelated species. The package <code>phylolm</code> fits it. It needs the tree of the same species, and a table whose row names are the tips' names:</p>
+<pre class="code" data-run="r"><code>library(ape)
+library(phylolm)
+tree &lt;- read.tree("/data/examples/fnss/tree/mammals.nwk")
+per &lt;- per[per$genome_species %in% tree$tip.label, ]
+rownames(per) &lt;- per$genome_species
+tr &lt;- keep.tip(tree, per$genome_species)
+summary(lm(sleep_pos_h ~ residue, data = per))$coefficients
+fit_l &lt;- phylolm(sleep_pos_h ~ residue, data = per, phy = tr, model = "lambda")
+summary(fit_l)$coefficients
+fit_l$optpar
+fit_b &lt;- phylolm(sleep_pos_h ~ residue, data = per, phy = tr, model = "BM")
+summary(fit_b)$coefficients</code></pre>
+<p>Read the row <code>residueT</code>: its estimate is the difference in hours between T and S species, and the last column its P-value. <code>lm</code> is an ordinary regression – the same test as the t-test above. The <code>"BM"</code> model (Brownian motion) assumes that sleep time drifted along the branches of the tree, so that relatives are as alike as the time since they split predicts; the <code>"lambda"</code> model lets the data say how far that is true: λ = 0 means the tree does not matter, λ = 1 that it matters as much as under Brownian motion (Pagel 1999). <code>fit_l$optpar</code> is the λ that fits best.</p>
+<div class="callout check"><div class="co-t">Check</div><p>Ordinary regression: −3.3 h, P = 0.013 (as the t-test). With the tree, λ = <b>0.59</b>: −3.1 h, <b>P = 0.09</b>. Under Brownian motion: −2.8 h, P = 0.46. Once the tree is allowed for, the difference is no longer significant.</p></div>
+<div class="callout think"><div class="co-t">Think</div><p>The estimate barely changed (about −3 hours) – but its uncertainty grew. Why does knowing that the 11 T species are relatives make the evidence weaker, when it does not change the data at all?</p></div>
+
+<h2>4. Check it another way</h2>
+<div class="task"><div class="task-t">Your turn</div>
+<ol>
+<li>Repeat the tests with the other sleep compilation, <code>sleep_msleep_h</code>. Start again from <code>d</code>, keep the rows with a msleep value, and average by genome species.</li>
+<li>Then SIK3 783. Its human amino acid is N; compare N with "S or T" – make a column with <code>ifelse(residue == "N", "N", "S or T")</code>.</li>
+</ol>
+<details class="hint"><summary>Show a hint</summary><p>The steps are those of sections 1 and 3 with another column (or another variant); <code>aggregate(sleep_msleep_h ~ genome_species + residue, …)</code>.</p></details>
+<details class="hint answer"><summary>Show the answer</summary>
+<pre class="code" data-run="r"><code># GRM1 458 with msleep
+d2 &lt;- d[!is.na(d$sleep_msleep_h), ]
+per2 &lt;- aggregate(sleep_msleep_h ~ genome_species + residue, data = d2, FUN = mean)
+per2 &lt;- per2[per2$genome_species %in% tree$tip.label, ]
+rownames(per2) &lt;- per2$genome_species
+table(per2$residue)
+summary(lm(sleep_msleep_h ~ residue, data = per2))$coefficients
+summary(phylolm(sleep_msleep_h ~ residue, data = per2, phy = keep.tip(tree, per2$genome_species),
+                model = "lambda"))$coefficients
+# SIK3 783 with the Phylogeny of Sleep
+sik &lt;- res[res$variant == "SIK3_N783Y", c("species", "residue")]
+s &lt;- merge(sleep, sik, by.x = "genome_species", by.y = "species")
+s &lt;- s[!is.na(s$sleep_pos_h), ]
+s$other &lt;- ifelse(s$residue == "N", "N", "S or T")
+ps &lt;- aggregate(sleep_pos_h ~ genome_species + other, data = s, FUN = mean)
+ps &lt;- ps[ps$genome_species %in% tree$tip.label, ]
+rownames(ps) &lt;- ps$genome_species
+table(ps$other)
+tapply(ps$sleep_pos_h, ps$other, mean)
+summary(lm(sleep_pos_h ~ other, data = ps))$coefficients
+fit_s &lt;- phylolm(sleep_pos_h ~ other, data = ps, phy = keep.tip(tree, ps$genome_species), model = "lambda")
+summary(fit_s)$coefficients
+fit_s$optpar</code></pre>
+<p><b>GRM1 458, msleep:</b> 60 species (33 S, 27 T – msleep has more carnivores and the marine mammals); T species sleep 2.2 h less, P = 0.054, and with the tree 0.8 h less, P = 0.69. <b>SIK3 783:</b> 49 species, 42 N and 7 S or T (two lemurs, the cat, the platypus, the echidna, a tenrec and a tree shrew). The S/T species sleep <i>more</i>, 13.7 h against 10.3 h (P = 0.031), but with the tree P = 0.12 (λ = 0.62). Neither position goes with sleep once relatedness is allowed for – and SIK3's points, if anything, the wrong way for a "short sleep" amino acid.</p></details></div>
+
+<h2>5. What the result means</h2>
+<p>Across mammals, the amino acids at GRM1 458 and SIK3 783 do not go with how long species sleep, once you allow for their family tree. That is a result – but read it carefully:</p>
+<ul>
+<li><b>It is not proof of no effect.</b> GRM1 458 changed once: however many species carry T, the test rests on one change, and has little power to detect anything. The sleep data are noisy (stage 6), and only about 50 of the species have both sleep data and sequences.</li>
+<li><b>The changes are not the mutations.</b> Mammals have T or S where the short sleepers have A (GRM1) or Y (SIK3). A different amino acid can do something different.</li>
+<li><b>What it does show</b> is that these two positions vary freely across mammals, and that nothing in the data links them to sleep. The positions where a change could plausibly shorten sleep across species – DEC2 P384, ADRB1 A187, NPSR1 Y206 – are the ones that never change (stage 4), so the comparison cannot be made for them at all. With one exception…</li>
+</ul>
+
+<div class="callout log"><div class="co-t">For your logbook</div>
+<ul>
+<li>The t-test result and the phylogenetic results for GRM1 458, side by side, with the number of species.</li>
+<li>In your own words, why the two disagree.</li>
+<li>The checks: msleep, and SIK3 783.</li>
+<li>Your figure: the sleep of S and T species, with a caption giving both P-values.</li>
+</ul></div>
+
+<h2>Going further</h2>
+<ul>
+<li><b>Body size.</b> Big mammals sleep less (stage 6). Add body mass to the model – <code>phylolm(sleep_msleep_h ~ residue + log10(body_mass_kg), …)</code> on the msleep data – does it change the result for GRM1?</li>
+<li><b>Species matches only.</b> Repeat the GRM1 test with the sleep species that have sequences of their own (<code>match == "species"</code>). Is the answer the same?</li>
+</ul>
+<ul class="checklist">
+<li data-check="s7-merge">I joined the amino acids to the sleep times, and averaged genome species that appear twice.</li>
+<li data-check="s7-ttest">I compared S and T species with a plot and a t-test.</li>
+<li data-check="s7-phylolm">I fitted phylogenetic regressions with <code>phylolm</code>, and can explain λ.</li>
+<li data-check="s7-checks">I repeated it with msleep, and for SIK3 783.</li>
+<li data-check="s7-meaning">I wrote down what the result does and does not show.</li>
+<li data-check="s7-log">I saved my figure and wrote this stage up.</li>
+</ul>
+<div class="stage-nav"><button type="button" data-goto="h-s06"><small>Back</small>← Stage 6 · How long mammals sleep</button><button class="next" type="button" data-goto="h-s08"><small>Next</small>Stage 8 · Inside the proteins →</button></div>
