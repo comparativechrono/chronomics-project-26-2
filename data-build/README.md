@@ -78,7 +78,7 @@ records, and the student data may then differ a little.
 | `ncbi/taxonomy.json` | NCBI E-utilities, `efetch db=taxonomy` (old ids of merged taxa kept, with `merged_into`) | 21 October 2026 |
 | `human/human_refseq.fasta` | NCBI E-utilities, `efetch db=protein` (RefSeq) | 21 October 2026 |
 | `alphafold/*.pdb` | AlphaFold DB, `alphafold.ebi.ac.uk/files/AF-{accession}-F1-model_v6.pdb` | version 6 |
-| `alphamissense/*.fnss.tsv` | AlphaMissense (Cheng et al. 2023), Zenodo record 8208688: `AlphaMissense_aa_substitutions.tsv.gz`, `AlphaMissense_isoforms_aa_substitutions.tsv.gz`; CC BY-NC-SA 4.0 | 2023 |
+| `alphamissense/*.fnss.tsv` | AlphaMissense (Cheng et al. 2023), Zenodo record 8208688: `AlphaMissense_aa_substitutions.tsv.gz`, `AlphaMissense_isoforms_aa_substitutions.tsv.gz`; CC BY-NC-SA 4.0 on that record (DeepMind's repository now gives CC BY 4.0) | 2023 |
 | `ensembl/lookup_*.json` | Ensembl REST API, `lookup/symbol/homo_sapiens/{gene}?expand=1` | release 116 |
 | `gnomad/gnomad_v4.1_*.json` | gnomAD GraphQL API (`gnomad.broadinstitute.org/api`), dataset `gnomad_r4` | v4.1 |
 | `genebass/*.json` | Genebass API (`main.genebass.org/api`; Karczewski et al. 2022: 394,841 UK Biobank exomes) | 21 October 2026 |

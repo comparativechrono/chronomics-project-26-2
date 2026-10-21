@@ -37,20 +37,20 @@ same[, c("reported_variant", "hgvsp", "ac", "af", "hom")]</code></pre>
 <div class="callout think"><div class="co-t">Think</div><p>A different change at the very position of the first short-sleep mutation is carried by one person in 600, some of them homozygous. UniProt notes that in cells P384Q has the opposite effect to P384R (it <i>increases</i> DEC2's repression of CLOCK–BMAL1). What does it tell you that P384 can change to Q in so many healthy people? What would you want to know about them?</p></div>
 
 <h2>2. Do the carriers sleep less?</h2>
-<p><b>UK Biobank</b> asked half a million people, among many other things, "About how many hours sleep do you get in every 24 hours?". <b>Genebass</b> (Karczewski et al. 2022) tested every variant in the exomes of 394,841 of them against thousands of traits, sleep among them. For each mutation: the number of carriers' alleles (<code>ac</code>), the difference in sleep between carriers and everyone else (<code>beta</code>, in hours), its 95% confidence interval and its P-value:</p>
+<p><b>UK Biobank</b> asked half a million people, among many other things, "About how many hours sleep do you get in every 24 hours? (please include naps)". <b>Genebass</b> (Karczewski et al. 2022) tested the variants in the exomes of 394,841 of them – the people of European ancestry – against thousands of traits, sleep among them. For each mutation: the number of carriers' alleles (<code>ac</code>), the difference in sleep between carriers and everyone else (<code>beta</code>, in hours), its 95% confidence interval and its P-value:</p>
 <pre class="code" data-run="r"><code>ukb &lt;- read.delim("/data/examples/fnss/population/ukb_exomes_fnss_variants.tsv")
 sd &lt;- ukb[ukb$phenotype == "sleep duration", ]
 sd[, c("variant_id", "ac", "beta", "ci95_low", "ci95_high", "p", "note")]</code></pre>
-<p>A <b>forest plot</b> shows each estimate as a dot and its confidence interval as a line. The red band is roughly how much less the short sleepers of the families slept – one to two hours (He et al. 2009: 6.25 hours against 8.06):</p>
+<p>A <b>forest plot</b> shows each estimate as a dot and its confidence interval as a line. The red band is roughly how much less the short sleepers of the families slept than their relatives – about one and a half to three hours (He et al. 2009: 6.25 hours against 8.06; the other papers report 1.7 to 3 hours less):</p>
 <pre class="code" data-run="r"><code>sd &lt;- sd[!is.na(sd$beta) &amp; sd$variant_id != "NPSR1_N107I", ]
 n &lt;- nrow(sd)
 par(mar = c(4.5, 10, 2, 1))
-plot(sd$beta, n:1, xlim = c(-2.5, 1.5), ylim = c(0.5, n + 0.5), pch = 19, yaxt = "n", ylab = "",
+plot(sd$beta, n:1, xlim = c(-3.5, 1.5), ylim = c(0.5, n + 0.5), pch = 19, yaxt = "n", ylab = "",
      xlab = "Difference in sleep, carriers minus others (hours a day)", main = "UK Biobank exomes")
 segments(sd$ci95_low, n:1, sd$ci95_high, n:1)
 axis(2, at = n:1, labels = paste0(sd$variant_id, " (", sd$ac, ")"), las = 1, cex.axis = 0.8)
 abline(v = 0, lty = 2)
-rect(-2, 0, -1, n + 1, col = rgb(1, 0, 0, 0.1), border = NA)</code></pre>
+rect(-3, 0, -1.5, n + 1, col = rgb(1, 0, 0, 0.1), border = NA)</code></pre>
 <p><code>segments</code> draws the lines from <code>ci95_low</code> to <code>ci95_high</code>; <code>axis(2, …)</code> writes the names, with the number of carriers' alleles, on the left; <code>rect</code> draws the band, in a see-through red.</p>
 <div class="callout check"><div class="co-t">Check</div><p>Five can be tested (Y362H and R889W are too rare). None goes with shorter sleep: A187V, 166 carriers' alleles, −0.11 hours (95% CI −0.25 to +0.04); S458A, 173, +0.12 (−0.03 to +0.26); N783Y, 101, −0.01 (−0.20 to +0.18); P384R, 29, +0.27 (−0.09 to +0.62). For the first three the interval rules out a difference of an hour or more. Y206H, with 3, says nothing either way (−1.0 to +1.2).</p></div>
 <div class="task"><div class="task-t">Your turn</div>

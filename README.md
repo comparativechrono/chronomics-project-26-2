@@ -186,6 +186,6 @@ THIRD_PARTY.md         the third-party software and data, their licences and sou
 
 Built from the Bioinformatics workbench of the Chronomic Medicine Group. The bundled programs and libraries keep
 their own licences – see [THIRD_PARTY.md](THIRD_PARTY.md), and keep `assets/vendor/licenses/` with the site. The
-data are public (sources and terms in THIRD_PARTY.md and the data README); note that the AlphaMissense predictions
-are CC BY-NC-SA 4.0 (non-commercial use). The studies and resources to cite are listed in the guide (*The project
+data are public (sources and terms in THIRD_PARTY.md and the data README); note that the Zenodo record of the AlphaMissense
+predictions gives them as CC BY-NC-SA 4.0 (non-commercial use), although DeepMind's repository now gives CC BY 4.0. The studies and resources to cite are listed in the guide (*The project
 data*). The guide and the site's own code and text are by the Chronomic Medicine Group.

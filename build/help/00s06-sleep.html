@@ -62,7 +62,7 @@ round(sort(tapply(sleep$sleep_pos_h, sleep$order, median, na.rm = TRUE)), 1)</co
 plot(log10(sleep$body_mass_kg), sleep$sleep_msleep_h, pch = 19,
      xlab = "Body mass (log10 kg)", ylab = "Hours of sleep (msleep)")
 cor.test(log10(sleep$body_mass_kg), sleep$sleep_msleep_h)</code></pre>
-<div class="callout check"><div class="co-t">Check</div><p>The hoofed mammals sleep least (median 3.4 h for horses and their relatives, 3.5 h for the even-toed ones), opossums and armadillos most (18–19 h); primates and carnivores sleep about 10 h, rodents 12. The bigger the mammal, the less it sleeps: <i>r</i> = <b>−0.55</b> over 77 species (P = 3 × 10<sup>−7</sup>).</p></div>
+<div class="callout check"><div class="co-t">Check</div><p>The hoofed mammals sleep least (median 3.4 h for horses and their relatives, 3.5 h for the even-toed ones), opossums and armadillos most (18–19 h); primates and carnivores sleep about 10 h, rodents 12. The bigger the mammal, the less it sleeps: <i>r</i> = <b>−0.55</b> over 77 species (P = 3 × 10<sup>−7</sup>). (Capellini et al. 2008 found that this link disappears once the family tree is allowed for – stage 7 shows why that can happen.)</p></div>
 
 <h2>5. Sleep in the sea</h2>
 <pre class="code" data-run="r"><code>table(sleep$environment)

@@ -18,7 +18,7 @@ sleep table and the tree; the human protein is first.
 | Files | What they are |
 | --- | --- |
 | `GENE_ncbi_mammals.fasta` (BHLHE41, ADRB1, NPSR1, GRM1, GRM1b, SIK3) | The RefSeq proteins of NCBI's orthologs of the human gene in mammals (NCBI Datasets, October 2026). Of a species' isoforms whose alignment to the human protein is good around the mutation (window identity ≥ 0.5 over ±10 positions), the one that covers most of the human protein. `GRM1b` has only isoforms with the mGluR1b tail. Name line: `>Genus_species ACCESSION common name`. 203–266 species per gene. |
-| `GENE_toga_mammals.fasta` (BHLHE41, ADRB1, NPSR1, GRM1, SIK3) | The same genes predicted by TOGA (Kirilenko et al. 2023) in placental mammal genome assemblies, from TOGA's multiple codon alignments with the human genome (hg38): one protein per species (the projection with the best-aligned window around the mutation). Name line: `>Genus_species ASSEMBLY common name`. 299–401 species per gene, and the human protein of the transcript TOGA used (for NPSR1 isoform G, NP_001287864.1, 390 amino acids, identical to isoform A up to position 340). `X`: a codon TOGA could not read; `*`: a stop codon. |
+| `GENE_toga_mammals.fasta` (BHLHE41, ADRB1, NPSR1, GRM1, SIK3) | The same genes predicted by TOGA (Kirilenko et al. 2023) in placental mammal genome assemblies, from TOGA's multiple codon alignments with the human genome (hg38): one protein per species (the projection with the best-aligned window around the mutation). Name line: `>Genus_species ASSEMBLY common name`. 299–401 species per gene, and the human protein of the transcript TOGA used (for NPSR1 isoform G, NP_001287864.1, 390 amino acids, identical to isoform A up to position 342). `X`: a codon TOGA could not read; `*`: a stop codon. |
 
 **A known fault.** In TOGA's alignment of *BHLHE41* the human reference goes out of frame at codon 432, and so do
 all the species' predicted proteins from there to the end: the last 50 amino acids in
@@ -71,7 +71,7 @@ NCBI's data (Datasets, Taxonomy, the SRA) are free to use – NCBI places no res
 use with citation of Kirilenko et al. (2023); the Phylogeny of Sleep database and msleep are published research data (msleep
 as shipped with ggplot2, MIT licence); the Upham et al. tree comes from the authors' MamPhy_v1 repository (the same trees are
 on Dryad, doi:10.5061/dryad.tb03d03, under CC0); AlphaFold DB models are CC BY 4.0; AlphaMissense predictions are CC
-BY-NC-SA 4.0 (non-commercial use); gnomAD's summary data are released without restriction on use (gnomAD's terms of use);
+BY-NC-SA 4.0 (non-commercial use) on the Zenodo record they come from, though DeepMind's repository now gives CC BY 4.0; gnomAD's summary data are released without restriction on use (gnomAD's terms of use);
 Genebass's results are public summary statistics of UK Biobank. Cite the papers listed on the guide's page *The project
 data*. How the files were made is in `data-build/` of the
 repository.

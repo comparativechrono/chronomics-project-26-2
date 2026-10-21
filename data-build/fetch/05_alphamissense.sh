@@ -1,5 +1,5 @@
 #!/bin/bash
-# 05_alphamissense.sh OUT – AlphaMissense (Cheng et al. 2023; Zenodo record 8208688; CC BY-NC-SA 4.0), cut down to
+# 05_alphamissense.sh OUT – AlphaMissense (Cheng et al. 2023; Zenodo record 8208688, CC BY-NC-SA 4.0 there), cut down to
 # the five genes. The two files are streamed and filtered on the way, never stored whole (1.2 and 2.5 GB, compressed):
 #   OUT/alphamissense/AlphaMissense_aa_substitutions.fnss.tsv           the five canonical UniProt proteins
 #   OUT/alphamissense/AlphaMissense_isoforms_aa_substitutions.fnss.tsv  every Ensembl transcript of the five genes
